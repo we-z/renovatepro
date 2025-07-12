@@ -331,7 +331,7 @@ export default function Landing() {
                     <p className="text-neutral-600 leading-relaxed group-hover:text-neutral-700 transition-colors duration-300">
                       {feature.description}
                     </p>
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-blue-500/5 opacity-0 duration-300 rounded-lg"></div>
                   </CardContent>
                 </Card>
               );
@@ -618,7 +618,7 @@ export default function Landing() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto text-white border-white hover:bg-white hover:text-primary transition-all duration-300 hover:scale-105 hover:shadow-2xl transform group"
+                  className="w-full sm:w-auto text-black border-white hover:bg-white hover:text-primary transition-all duration-300 hover:scale-105 hover:shadow-2xl transform group"
                 >
                   <span className="group-hover:scale-105 transition-transform duration-300">
                     Try Demo
