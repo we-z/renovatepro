@@ -2,73 +2,24 @@
   <!-- Background -->
   <rect width="1200" height="630" fill="#3B82F6"/>
   
-  <!-- Subtle Background Pattern -->
-  <circle cx="1050" cy="100" r="120" fill="#FFFFFF" opacity="0.05"/>
-  <circle cx="150" cy="530" r="80" fill="#FFFFFF" opacity="0.08"/>
-  
   <!-- Main Content Area -->
-  <rect x="100" y="150" width="1000" height="330" rx="16" fill="#FFFFFF"/>
-  
-  <!-- Logo Icon -->
-  <g transform="translate(140, 190)">
-    <rect x="0" y="0" width="48" height="48" rx="8" fill="#3B82F6"/>
-    <path d="M24 8 L36 20 L32 24 L20 12 Z M12 28 L24 16 L28 20 L16 32 Z" fill="#FFFFFF"/>
-  </g>
+  <rect x="80" y="120" width="1040" height="390" rx="20" fill="#FFFFFF"/>
   
   <!-- Brand Name -->
-  <text x="210" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#1F2937">
+  <text x="150" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#3B82F6">
     RenovatePro
   </text>
   
   <!-- Main Headline -->
-  <text x="140" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="#111827">
+  <text x="150" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800" fill="#111827">
     Connect with Trusted Contractors
   </text>
-  <text x="140" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" fill="#3B82F6">
+  <text x="150" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800" fill="#3B82F6">
     for Your Next Project
   </text>
   
-  <!-- Description -->
-  <text x="140" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="400" fill="#6B7280">
-    Find, compare, and hire qualified contractors for your home renovation projects.
-  </text>
-  
-  <!-- Key Features - Right Side -->
-  <g transform="translate(650, 200)">
-    <rect x="0" y="0" width="400" height="180" rx="12" fill="#F8FAFC"/>
-    
-    <!-- Feature 1 -->
-    <circle cx="30" cy="40" r="16" fill="#3B82F6" opacity="0.1"/>
-    <rect x="22" y="32" width="16" height="16" rx="2" fill="#3B82F6"/>
-    <text x="60" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#374151">
-      Project Management
-    </text>
-    
-    <!-- Feature 2 -->
-    <circle cx="30" cy="90" r="16" fill="#10B981" opacity="0.1"/>
-    <path d="M22 84 L38 84 L38 96 L32 96 L22 102 Z" fill="#10B981"/>
-    <text x="60" y="98" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#374151">
-      Direct Communication
-    </text>
-    
-    <!-- Feature 3 -->
-    <circle cx="30" cy="140" r="16" fill="#F59E0B" opacity="0.1"/>
-    <rect x="24" y="134" width="12" height="12" rx="1" fill="#F59E0B"/>
-    <text x="60" y="148" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#374151">
-      Competitive Bidding
-    </text>
-  </g>
-  
-  <!-- CTA Button -->
-  <rect x="140" y="400" width="160" height="48" rx="24" fill="#3B82F6"/>
-  <text x="220" y="430" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF">
-    Get Started Free
-  </text>
-  
-  <!-- Trust Badge -->
-  <rect x="850" y="415" width="140" height="28" rx="14" fill="#10B981" opacity="0.1"/>
-  <circle cx="865" cy="429" r="4" fill="#10B981"/>
-  <text x="875" y="433" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#059669">
-    Trusted by 10,000+
+  <!-- Simple Description -->
+  <text x="150" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="400" fill="#6B7280">
+    Find, compare, and hire qualified contractors for home renovation projects.
   </text>
 </svg>
