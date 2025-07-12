@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<string>("");
   const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,9 +29,10 @@ export default function Login() {
         description: "You have successfully logged in.",
       });
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
-        description: "Invalid username or password.",
+        description: error instanceof Error ? error.message : "Invalid username or password.",
         variant: "destructive",
       });
     } finally {
@@ -49,21 +51,23 @@ export default function Login() {
       email: formData.get("email") as string,
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
-      userType: formData.get("userType") as string,
+      userType: userType,
       phone: formData.get("phone") as string,
       location: formData.get("location") as string,
     };
 
     try {
+      console.log("Registering user:", userData);
       await authService.register(userData);
       toast({
         title: "Account created!",
         description: "Welcome to RenovatePro.",
       });
     } catch (error) {
+      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
-        description: "Please check your information and try again.",
+        description: error instanceof Error ? error.message : "Please check your information and try again.",
         variant: "destructive",
       });
     } finally {
@@ -87,6 +91,13 @@ export default function Login() {
             <CardTitle>Welcome</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm font-medium text-blue-800 mb-2">Demo Accounts (for testing):</p>
+              <div className="text-xs text-blue-700 space-y-1">
+                <p><strong>Homeowner:</strong> sarah_johnson / password123</p>
+                <p><strong>Contractor:</strong> elite_construction / password123</p>
+              </div>
+            </div>
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
@@ -181,7 +192,7 @@ export default function Login() {
                   
                   <div className="space-y-2">
                     <Label htmlFor="userType">Account Type</Label>
-                    <Select name="userType" required>
+                    <Select value={userType} onValueChange={setUserType} required>
                       <SelectTrigger>
                         <SelectValue placeholder="Select account type" />
                       </SelectTrigger>
@@ -212,7 +223,7 @@ export default function Login() {
                     />
                   </div>
                   
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button type="submit" className="w-full" disabled={isLoading || !userType}>
                     {isLoading ? "Creating account..." : "Create Account"}
                   </Button>
                 </form>
