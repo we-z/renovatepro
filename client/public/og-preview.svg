@@ -3,23 +3,28 @@
   <rect width="1200" height="630" fill="#3B82F6"/>
   
   <!-- Main Content Area -->
-  <rect x="80" y="120" width="1040" height="390" rx="20" fill="#FFFFFF"/>
+  <rect x="60" y="80" width="1080" height="470" rx="20" fill="#FFFFFF"/>
   
   <!-- Brand Name -->
-  <text x="150" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#3B82F6">
+  <text x="120" y="180" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="700" fill="#3B82F6">
     RenovatePro
   </text>
   
   <!-- Main Headline -->
-  <text x="150" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800" fill="#111827">
+  <text x="120" y="260" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="800" fill="#111827">
     Connect with Trusted Contractors
   </text>
-  <text x="150" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800" fill="#3B82F6">
+  <text x="120" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="800" fill="#3B82F6">
     for Your Next Project
   </text>
   
   <!-- Simple Description -->
-  <text x="150" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="400" fill="#6B7280">
+  <text x="120" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" fill="#6B7280">
     Find, compare, and hire qualified contractors for home renovation projects.
+  </text>
+  
+  <!-- Get Started -->
+  <text x="120" y="460" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#3B82F6">
+    Get Started Free
   </text>
 </svg>
