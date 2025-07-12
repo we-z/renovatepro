@@ -220,7 +220,7 @@ export default function Landing() {
                     </Button>
                   </div>
                 </div>
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500 animate-pulse"></div>
+                
                 <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-primary rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-500 animate-pulse delay-300"></div>
               </div>
             </div>
