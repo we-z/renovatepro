@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Navigation } from "@/components/navigation";
+import { SubscriptionGuard } from "@/components/subscription-guard";
 import { ProjectCard } from "@/components/project-card";
 import { BidTable } from "@/components/bid-table";
 import { ProjectModal } from "@/components/project-modal";
@@ -171,18 +172,21 @@ export default function Projects() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-50">
-        <Navigation />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading...</div>
+      <SubscriptionGuard feature="project management">
+        <div className="min-h-screen bg-neutral-50">
+          <Navigation />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="text-center">Loading...</div>
+          </div>
         </div>
-      </div>
+      </SubscriptionGuard>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <Navigation onPostProject={() => setShowProjectModal(true)} />
+    <SubscriptionGuard feature="project management">
+      <div className="min-h-screen bg-neutral-50">
+        <Navigation onPostProject={() => setShowProjectModal(true)} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
         {/* Header */}
@@ -453,6 +457,7 @@ export default function Projects() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </SubscriptionGuard>
   );
 }

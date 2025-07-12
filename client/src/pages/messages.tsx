@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Navigation } from "@/components/navigation";
+import { SubscriptionGuard } from "@/components/subscription-guard";
 import { MessageThread } from "@/components/message-thread";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -154,8 +155,9 @@ export default function Messages() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <Navigation />
+    <SubscriptionGuard feature="messaging">
+      <div className="min-h-screen bg-neutral-50">
+        <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
         {/* Header */}
@@ -280,6 +282,7 @@ export default function Messages() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </SubscriptionGuard>
   );
 }

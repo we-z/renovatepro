@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Navigation } from "@/components/navigation";
+import { SubscriptionGuard } from "@/components/subscription-guard";
 import { ContractorCard } from "@/components/contractor-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -117,8 +118,9 @@ export default function Contractors() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <Navigation />
+    <SubscriptionGuard feature="contractor directory">
+      <div className="min-h-screen bg-neutral-50">
+        <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
         {/* Header */}
@@ -379,6 +381,7 @@ export default function Contractors() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </SubscriptionGuard>
   );
 }

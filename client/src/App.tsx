@@ -22,23 +22,25 @@ function Router() {
     return authService.subscribe(setAuthState);
   }, []);
 
+  if (!authState.isAuthenticated) {
+    return (
+      <Switch>
+        <Route path="/" component={Landing} />
+        <Route path="/subscribe" component={Subscribe} />
+        <Route path="/app" component={Login} />
+        <Route component={Login} />
+      </Switch>
+    );
+  }
+
   return (
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/subscribe" component={Subscribe} />
-      <Route path="/app">
-        {!authState.isAuthenticated ? (
-          <Login />
-        ) : (
-          <Switch>
-            <Route path="/app" component={Dashboard} />
-            <Route path="/app/projects" component={Projects} />
-            <Route path="/app/contractors" component={Contractors} />
-            <Route path="/app/messages" component={Messages} />
-            <Route component={NotFound} />
-          </Switch>
-        )}
-      </Route>
+      <Route path="/app" exact component={Dashboard} />
+      <Route path="/app/projects" component={Projects} />
+      <Route path="/app/contractors" component={Contractors} />
+      <Route path="/app/messages" component={Messages} />
       <Route component={NotFound} />
     </Switch>
   );
