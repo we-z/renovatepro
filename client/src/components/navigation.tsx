@@ -32,10 +32,10 @@ export function Navigation({ onPostProject }: NavigationProps) {
   };
 
   const navItems = [
-    { path: "/", label: "Dashboard", icon: Home },
-    { path: "/projects", label: "Projects", icon: FolderOpen },
-    { path: "/contractors", label: "Contractors", icon: Users },
-    { path: "/messages", label: "Messages", icon: MessageCircle },
+    { path: "/app", label: "Dashboard", icon: Home },
+    { path: "/app/projects", label: "Projects", icon: FolderOpen },
+    { path: "/app/contractors", label: "Contractors", icon: Users },
+    { path: "/app/messages", label: "Messages", icon: MessageCircle },
   ];
 
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -49,7 +49,7 @@ export function Navigation({ onPostProject }: NavigationProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href="/app" className="flex items-center space-x-2">
                 <Hammer className="h-6 w-6 text-primary" />
                 <span className="text-xl font-bold text-neutral-900">RenovatePro</span>
               </Link>

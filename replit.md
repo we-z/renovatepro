@@ -1,8 +1,17 @@
-# Home Improvement Platform
+# RenovatePro - Home Improvement Platform
 
 ## Overview
 
-This is a full-stack web application that connects homeowners with contractors for home improvement projects. The platform allows homeowners to post projects, contractors to submit bids, and facilitates communication between both parties through a built-in messaging system.
+RenovatePro is a comprehensive SaaS platform that connects homeowners and property managers with trusted contractors for renovation projects. The platform features a professional landing page, subscription-based pricing tiers, and Stripe payment integration for secure transactions.
+
+## Recent Changes (2024-12-21)
+
+- ✓ Created professional landing page with hero, features, pricing, and testimonials sections
+- ✓ Integrated Stripe API for subscription payments with three pricing tiers (Basic $29, Pro $79, Enterprise $199)
+- ✓ Updated database schema to include subscription fields (stripeCustomerId, stripeSubscriptionId, subscriptionStatus, subscriptionPlan)
+- ✓ Restructured routing: Landing page at `/`, app functionality at `/app/*`, subscription page at `/subscribe`
+- ✓ Added subscription gating system to control access based on user plans
+- ✓ Implemented clean, trustworthy design with professional UI components
 
 ## User Preferences
 
@@ -36,6 +45,13 @@ Preferred communication style: Simple, everyday language.
 - User registration and login endpoints
 - Support for two user types: homeowners and contractors
 - Password stored in plain text (suitable for development/demo purposes)
+- Subscription-based access control with Stripe integration
+
+### Subscription System
+- **Stripe Integration**: Secure payment processing for subscription plans
+- **Three Pricing Tiers**: Basic ($29/month), Pro ($79/month), Enterprise ($199/month)
+- **Plan Features**: Tiered access to project posting limits, contractor matching, and premium features
+- **Subscription Management**: Track subscription status, plan type, and Stripe customer/subscription IDs
 
 ### User Management
 - **Users Table**: Core user information (username, email, contact details)

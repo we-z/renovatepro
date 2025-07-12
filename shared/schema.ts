@@ -13,6 +13,10 @@ export const users = pgTable("users", {
   phone: text("phone"),
   location: text("location"),
   profileImage: text("profile_image"),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionStatus: text("subscription_status").default("inactive"), // 'active', 'canceled', 'past_due', 'inactive'
+  subscriptionPlan: text("subscription_plan"), // 'basic', 'pro', 'enterprise'
   createdAt: timestamp("created_at").defaultNow(),
 });
 

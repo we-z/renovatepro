@@ -1,8 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import Stripe from "stripe";
 import { storage } from "./storage";
 import { insertUserSchema, insertContractorSchema, insertProjectSchema, insertBidSchema, insertMessageSchema } from "@shared/schema";
 import { z } from "zod";
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2024-06-20",
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication
@@ -314,6 +322,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(400).json({ message: "Failed to mark message as read" });
     }
+  });
+
+  // Stripe subscription route
+  app.post('/api/create-subscription', async (req, res) => {
+    try {
+      const { planId, planName, amount } = req.body;
+      
+      // For demo purposes, we'll create a payment intent instead of a subscription
+      // In production, you'd create actual subscription products in Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: {
+          planId,
+          planName,
+        },
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        subscriptionId: paymentIntent.id
+      });
+    } catch (error: any) {
+      console.error('Stripe error:', error);
+      res
+        .status(500)
+        .json({ message: "Error creating subscription: " + error.message });
+    }
+  });
+
+  // Webhook to handle successful payments
+  app.post('/api/stripe-webhook', async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+      // In production, you'd verify the webhook signature
+      event = req.body;
+    } catch (err) {
+      console.log('Webhook signature verification failed.');
+      return res.status(400).send('Webhook signature verification failed.');
+    }
+
+    if (event.type === 'payment_intent.succeeded') {
+      const paymentIntent = event.data.object;
+      const { planId, planName } = paymentIntent.metadata;
+      
+      // Update user subscription status
+      // Note: In a real app, you'd need to track which user this payment belongs to
+      console.log('Payment succeeded for plan:', planName);
+    }
+
+    res.json({ received: true });
   });
 
   const httpServer = createServer(app);
