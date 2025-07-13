@@ -151,25 +151,25 @@ export default function Landing() {
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group">
+              <a href="#features" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group hover:scale-105">
                 Features
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
               </a>
-              <a href="#pricing" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group">
+              <a href="#pricing" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group hover:scale-105">
                 Pricing
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
               </a>
-              <a href="#demo" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group">
+              <a href="#demo" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group hover:scale-105">
                 Demo
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
               </a>
               <Link href="/login">
-                <Button variant="outline" className="hover:shadow-md transition-all duration-300 hover:scale-105">
+                <Button variant="outline" className="hover:shadow-lg hover:bg-slate-50 transition-all duration-300 hover:scale-105 border-slate-300 hover:border-slate-900">
                   Sign In
                 </Button>
               </Link>
               <Link href="/login">
-                <Button className="bg-slate-900 hover:bg-slate-800 text-white hover:shadow-lg transition-all duration-300 hover:scale-105 group">
+                <Button className="bg-slate-900 hover:bg-slate-700 text-white hover:shadow-xl transition-all duration-300 hover:scale-105 group shadow-lg">
                   Get Started
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
@@ -183,13 +183,13 @@ export default function Landing() {
       <section className="relative pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <div className="animate-fade-in-up">
-            <Badge className="mb-6 px-4 py-2 bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 transition-all duration-300 hover:scale-105 shadow-sm">
-              <Sparkles className="w-4 h-4 mr-2" />
+            <Badge className="mb-6 px-4 py-2 bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-900 hover:text-white transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-lg cursor-pointer">
+              <Sparkles className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-12" />
               AI-Native Property Management Platform
             </Badge>
           </div>
           
-          <h1 className="text-6xl md:text-8xl font-bold text-slate-900 mb-6 tracking-tight animate-fade-in-up animation-delay-200 drop-shadow-sm">
+          <h1 className="text-6xl md:text-8xl font-bold text-slate-900 mb-6 tracking-tight animate-fade-in-up animation-delay-200 drop-shadow-sm hover:drop-shadow-lg transition-all duration-300 cursor-default">
             AI for Property Managers
           </h1>
           
@@ -208,9 +208,9 @@ export default function Landing() {
             <Button 
               variant="outline" 
               size="lg" 
-              className="px-8 py-4 text-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 group bg-white/80 backdrop-blur-sm"
+              className="px-8 py-4 text-lg shadow-md hover:shadow-xl hover:bg-slate-900 hover:text-white transition-all duration-300 hover:scale-105 group bg-white/80 backdrop-blur-sm border-slate-300 hover:border-slate-900"
             >
-              <Play className="mr-2 h-5 w-5" />
+              <Play className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
               Watch Demo
             </Button>
           </div>
@@ -229,13 +229,13 @@ export default function Landing() {
             {stats.map((stat, index) => (
               <div 
                 key={stat.label} 
-                className="text-center group animate-fade-in-up"
+                className="text-center group animate-fade-in-up cursor-pointer hover:bg-white/5 p-4 rounded-xl transition-all duration-300"
                 style={{ animationDelay: `${index * 100 + 800}ms` }}
               >
-                <div className="text-4xl md:text-5xl font-bold text-white mb-2 transition-transform duration-300 group-hover:scale-110">
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2 transition-all duration-300 group-hover:scale-125 group-hover:text-slate-100">
                   {stat.value}
                 </div>
-                <div className="text-slate-300 font-medium">{stat.label}</div>
+                <div className="text-slate-300 font-medium group-hover:text-slate-200 transition-colors duration-300">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -261,18 +261,18 @@ export default function Landing() {
               return (
                 <Card 
                   key={feature.title} 
-                  className="group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 shadow-md animate-fade-in-up bg-white/90 backdrop-blur-sm relative overflow-hidden"
+                  className="group hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 border-0 shadow-md animate-fade-in-up bg-white/90 backdrop-blur-sm relative overflow-hidden cursor-pointer"
                   style={{ animationDelay: `${index * 100 + 1000}ms` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out opacity-0 group-hover:opacity-100"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out opacity-0 group-hover:opacity-100"></div>
                   <CardContent className="p-8 relative">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-105 shadow-lg group-hover:shadow-xl">
-                      <Icon className="h-8 w-8 text-white" />
+                    <div className="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-slate-700 shadow-lg group-hover:shadow-2xl group-hover:rotate-3">
+                      <Icon className="h-8 w-8 text-white transition-transform duration-300 group-hover:scale-110" />
                     </div>
-                    <h3 className="text-xl font-semibold text-slate-900 mb-4">
+                    <h3 className="text-xl font-semibold text-slate-900 mb-4 group-hover:text-slate-700 transition-colors duration-300">
                       {feature.title}
                     </h3>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="text-slate-600 leading-relaxed group-hover:text-slate-800 transition-colors duration-300">
                       {feature.description}
                     </p>
                   </CardContent>
@@ -300,10 +300,10 @@ export default function Landing() {
             {pricing.map((plan, index) => (
               <Card 
                 key={plan.name} 
-                className={`relative group transition-all duration-300 hover:scale-105 border-0 shadow-lg hover:shadow-xl animate-fade-in-up bg-white/90 backdrop-blur-sm ${
+                className={`relative group transition-all duration-300 hover:scale-105 hover:-translate-y-3 border-0 shadow-lg hover:shadow-2xl animate-fade-in-up bg-white/90 backdrop-blur-sm cursor-pointer ${
                   plan.popular 
-                    ? 'ring-2 ring-slate-900 shadow-slate-200' 
-                    : ''
+                    ? 'ring-2 ring-slate-900 shadow-slate-200 hover:ring-slate-700' 
+                    : 'hover:ring-2 hover:ring-slate-300'
                 }`}
                 style={{ animationDelay: `${index * 200 + 1200}ms` }}
               >
@@ -316,30 +316,30 @@ export default function Landing() {
                 )}
                 
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{plan.name}</h3>
-                  <p className="text-slate-600 mb-6">{plan.description}</p>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-slate-700 transition-colors duration-300">{plan.name}</h3>
+                  <p className="text-slate-600 mb-6 group-hover:text-slate-800 transition-colors duration-300">{plan.description}</p>
                   
                   <div className="mb-6">
-                    <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
+                    <span className="text-4xl font-bold text-slate-900 group-hover:scale-105 transition-transform duration-300 inline-block">{plan.price}</span>
                     {plan.price !== "Custom" && (
-                      <span className="text-slate-500 ml-2">/{plan.period}</span>
+                      <span className="text-slate-500 ml-2 group-hover:text-slate-700 transition-colors duration-300">/{plan.period}</span>
                     )}
                   </div>
                   
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center">
-                        <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                        <span className="text-slate-600">{feature}</span>
+                      <li key={feature} className="flex items-center group/item hover:bg-slate-50 p-2 rounded-md transition-colors duration-200">
+                        <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0 group-hover/item:text-green-600 group-hover/item:scale-110 transition-all duration-200" />
+                        <span className="text-slate-600 group-hover/item:text-slate-900 transition-colors duration-200">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   
                   <Button 
-                    className={`w-full py-3 transition-all duration-300 hover:scale-105 group shadow-md hover:shadow-lg ${
+                    className={`w-full py-3 transition-all duration-300 hover:scale-105 group shadow-md hover:shadow-xl hover:-translate-y-1 ${
                       plan.popular 
-                        ? 'bg-slate-900 hover:bg-slate-800 text-white' 
-                        : 'bg-slate-900 hover:bg-slate-800 text-white'
+                        ? 'bg-slate-900 hover:bg-slate-700 text-white' 
+                        : 'bg-slate-900 hover:bg-slate-700 text-white'
                     }`}
                   >
                     {plan.cta}
@@ -363,17 +363,17 @@ export default function Landing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-400">
             <Link href="/login">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 hover:text-slate-700 px-8 py-4 text-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group shadow-lg">
                 Start Your Free Trial
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:scale-110" />
               </Button>
             </Link>
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg transition-all duration-300 hover:scale-105"
+              className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl group"
             >
-              Schedule Demo
+              <span className="transition-transform duration-300 group-hover:scale-105">Schedule Demo</span>
             </Button>
           </div>
         </div>
@@ -390,9 +390,18 @@ export default function Landing() {
               <span className="text-xl font-semibold text-slate-900">Puul AI</span>
             </div>
             <div className="flex space-x-8 text-slate-600">
-              <a href="#" className="hover:text-slate-900 transition-colors duration-300">Privacy</a>
-              <a href="#" className="hover:text-slate-900 transition-colors duration-300">Terms</a>
-              <a href="#" className="hover:text-slate-900 transition-colors duration-300">Support</a>
+              <a href="#" className="hover:text-slate-900 hover:scale-105 transition-all duration-300 relative group">
+                Privacy
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#" className="hover:text-slate-900 hover:scale-105 transition-all duration-300 relative group">
+                Terms
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#" className="hover:text-slate-900 hover:scale-105 transition-all duration-300 relative group">
+                Support
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
+              </a>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-neutral-200 text-center text-slate-500">

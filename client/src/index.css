@@ -238,6 +238,44 @@
   animation-delay: 4000ms;
 }
 
+/* Enhanced accessibility and hover effects */
+*:focus {
+  outline: 2px solid #0f172a;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #0f172a;
+  outline-offset: 2px;
+}
+
+/* Improved high contrast hover states */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Enhanced button accessibility */
+button, 
+.button-like {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* High contrast text for accessibility */
+.text-high-contrast {
+  color: #0f172a;
+}
+
+.text-medium-contrast {
+  color: #475569;
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
