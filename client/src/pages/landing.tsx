@@ -199,9 +199,8 @@ export default function Landing() {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-6 tracking-tight animate-fade-in-up animation-delay-200">
-            The Future of{" "}
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
-              Property Management
+              AI for Property Managers
             </span>
           </h1>
           
