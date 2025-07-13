@@ -75,58 +75,99 @@ export function Navigation({ onPostProject }: NavigationProps) {
             </div>
 
             <div className="flex items-center space-x-4">
-              {authState.user?.userType === "homeowner" && (
-                <Button onClick={handlePostProject} className="bg-accent hover:bg-accent/90">
-                  Post Project
+              {/* Desktop actions */}
+              <div className="hidden md:flex items-center space-x-4">
+                {authState.user?.userType === "homeowner" && (
+                  <Button onClick={handlePostProject} className="bg-accent hover:bg-accent/90">
+                    Post Project
+                  </Button>
+                )}
+                
+                <Button variant="ghost" size="sm" className="relative">
+                  <Bell className="h-4 w-4" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
                 </Button>
-              )}
-              
-              <Button variant="ghost" size="sm" className="relative">
-                <Bell className="h-4 w-4" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </Button>
-              
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">
+                
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">
+                      {getInitials(authState.user?.firstName, authState.user?.lastName)}
+                    </span>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </div>
+              </div>
+
+              {/* Mobile - minimal header */}
+              <div className="md:hidden flex items-center space-x-2">
+                <Button variant="ghost" size="sm" className="relative">
+                  <Bell className="h-4 w-4" />
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </Button>
+                
+                <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-medium">
                     {getInitials(authState.user?.firstName, authState.user?.lastName)}
                   </span>
                 </div>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </div>
 
-              {/* Mobile menu */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="md:hidden">
-                    <Menu className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent>
-                  <div className="flex flex-col space-y-4 mt-8">
-                    {navItems.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = location === item.path;
-                      return (
-                        <Link
-                          key={item.path}
-                          href={item.path}
-                          className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                            isActive
-                              ? "bg-primary text-white"
-                              : "text-neutral-700 hover:bg-neutral-100"
-                          }`}
+                {/* Mobile menu */}
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Menu className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <div className="flex flex-col space-y-4 mt-8">
+                      {/* Navigation items */}
+                      {navItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = location === item.path;
+                        return (
+                          <Link
+                            key={item.path}
+                            href={item.path}
+                            className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                              isActive
+                                ? "bg-primary text-white"
+                                : "text-neutral-700 hover:bg-neutral-100"
+                            }`}
+                          >
+                            <Icon className="h-5 w-5" />
+                            <span>{item.label}</span>
+                          </Link>
+                        );
+                      })}
+                      
+                      {/* Separator */}
+                      <hr className="my-4 border-neutral-200" />
+                      
+                      {/* Mobile actions at bottom of sidebar */}
+                      {authState.user?.userType === "homeowner" && (
+                        <Button 
+                          onClick={handlePostProject} 
+                          className="w-full bg-accent hover:bg-accent/90 justify-start"
                         >
-                          <Icon className="h-5 w-5" />
-                          <span>{item.label}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </SheetContent>
-              </Sheet>
+                          <FolderOpen className="h-5 w-5 mr-3" />
+                          Post Project
+                        </Button>
+                      )}
+                      
+                      <Button 
+                        variant="ghost" 
+                        onClick={handleLogout}
+                        className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <span className="h-5 w-5 mr-3">⏻</span>
+                        Logout
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
           </div>
         </div>
