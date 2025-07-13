@@ -2,16 +2,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Phone, Mail, Shield } from "lucide-react";
-import type { User } from "@shared/schema";
+import type { Contractor } from "@shared/schema";
 
 interface ContractorCardProps {
-  contractor: User & {
-    companyName?: string;
-    rating?: number;
-    reviewCount?: number;
+  contractor: Contractor & {
+    user?: any;
   };
-  onViewProfile?: (contractor: User) => void;
-  onSendMessage?: (contractor: User) => void;
+  onViewProfile?: (contractor: Contractor) => void;
+  onSendMessage?: (contractor: Contractor) => void;
   showActions?: boolean;
 }
 

@@ -1,9 +1,9 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Building, Bell, Home, Building2, Users, MessageCircle, Menu, Bot } from "lucide-react";
+import { Hammer, Bell, Home, FolderOpen, Users, MessageCircle, Menu } from "lucide-react";
 import { authService } from "@/lib/auth";
 import { useState, useEffect } from "react";
-import { PropertyModal } from "./property-modal";
+import { ProjectModal } from "./project-modal";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface NavigationProps {
@@ -13,7 +13,7 @@ interface NavigationProps {
 export function Navigation({ onPostProject }: NavigationProps) {
   const [location] = useLocation();
   const [authState, setAuthState] = useState(authService.getState());
-  const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
 
   useEffect(() => {
     return authService.subscribe(setAuthState);
@@ -27,16 +27,15 @@ export function Navigation({ onPostProject }: NavigationProps) {
     if (onPostProject) {
       onPostProject();
     } else {
-      setShowPropertyModal(true);
+      setShowProjectModal(true);
     }
   };
 
   const navItems = [
     { path: "/app", label: "Dashboard", icon: Home },
-    { path: "/app/properties", label: "Properties", icon: Building2 },
-    { path: "/app/tenants", label: "Tenants", icon: Users },
-    { path: "/app/maintenance", label: "Maintenance", icon: MessageCircle },
-    { path: "/app/insights", label: "AI Insights", icon: Bot },
+    { path: "/app/projects", label: "Projects", icon: FolderOpen },
+    { path: "/app/contractors", label: "Contractors", icon: Users },
+    { path: "/app/messages", label: "Messages", icon: MessageCircle },
   ];
 
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -51,10 +50,8 @@ export function Navigation({ onPostProject }: NavigationProps) {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <Link href="/app" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-                  <Building className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-xl font-semibold text-slate-900">Puul AI</span>
+                <Hammer className="h-6 w-6 text-primary" />
+                <span className="text-xl font-bold text-neutral-900">RenovatePro</span>
               </Link>
               
               <nav className="hidden md:flex space-x-6">
@@ -80,9 +77,9 @@ export function Navigation({ onPostProject }: NavigationProps) {
             <div className="flex items-center space-x-4">
               {/* Desktop actions */}
               <div className="hidden md:flex items-center space-x-4">
-                {authState.user?.userType === "property_manager" && (
-                  <Button onClick={handlePostProject} className="bg-slate-900 hover:bg-slate-800 text-white">
-                    Add Property
+                {authState.user?.userType === "homeowner" && (
+                  <Button onClick={handlePostProject} className="bg-accent hover:bg-accent/90">
+                    Post Project
                   </Button>
                 )}
                 
@@ -149,13 +146,13 @@ export function Navigation({ onPostProject }: NavigationProps) {
                       <hr className="my-4 border-neutral-200" />
                       
                       {/* Mobile actions at bottom of sidebar */}
-                      {authState.user?.userType === "property_manager" && (
+                      {authState.user?.userType === "homeowner" && (
                         <Button 
                           onClick={handlePostProject} 
-                          className="w-full bg-slate-900 hover:bg-slate-800 text-white justify-start"
+                          className="w-full bg-accent hover:bg-accent/90 justify-start"
                         >
-                          <Building2 className="h-5 w-5 mr-3" />
-                          Add Property
+                          <FolderOpen className="h-5 w-5 mr-3" />
+                          Post Project
                         </Button>
                       )}
                       
@@ -198,9 +195,9 @@ export function Navigation({ onPostProject }: NavigationProps) {
         </div>
       </nav>
 
-      <PropertyModal
-        open={showPropertyModal}
-        onOpenChange={setShowPropertyModal}
+      <ProjectModal
+        open={showProjectModal}
+        onOpenChange={setShowProjectModal}
       />
     </>
   );

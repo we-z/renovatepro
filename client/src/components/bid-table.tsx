@@ -9,16 +9,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Eye, Check, X } from "lucide-react";
-import type { MaintenanceRequest } from "@shared/schema";
+import type { Bid } from "@shared/schema";
 
 interface BidTableProps {
-  bids: (MaintenanceRequest & {
+  bids: (Bid & {
     contractor?: any;
-    property?: any;
+    project?: any;
   })[];
-  onViewBid?: (bid: MaintenanceRequest) => void;
-  onAcceptBid?: (bid: MaintenanceRequest) => void;
-  onRejectBid?: (bid: MaintenanceRequest) => void;
+  onViewBid?: (bid: Bid) => void;
+  onAcceptBid?: (bid: Bid) => void;
+  onRejectBid?: (bid: Bid) => void;
   showProjectColumn?: boolean;
 }
 

@@ -1,14 +1,16 @@
 import { apiRequest } from "./queryClient";
-import type { User } from "@shared/schema";
+import type { User, Contractor } from "@shared/schema";
 
 interface AuthState {
   user: User | null;
+  contractor: Contractor | null;
   isAuthenticated: boolean;
 }
 
 class AuthService {
   private state: AuthState = {
     user: null,
+    contractor: null,
     isAuthenticated: false,
   };
 
@@ -33,14 +35,18 @@ class AuthService {
   }
 
   async login(username: string, password: string): Promise<void> {
-    try {
-      const response = await apiRequest("POST", "/api/auth/login", { username, password });
-      this.state.user = response.user;
-      this.state.isAuthenticated = true;
-      this.notify();
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiRequest("POST", "/api/auth/login", {
+      username,
+      password,
+    });
+
+    const data = await response.json();
+    this.state = {
+      user: data.user,
+      contractor: data.contractor,
+      isAuthenticated: true,
+    };
+    this.notify();
   }
 
   async register(userData: {
@@ -50,24 +56,24 @@ class AuthService {
     firstName: string;
     lastName: string;
     userType: string;
-    companyName?: string;
-    role?: string;
     phone?: string;
     location?: string;
   }): Promise<void> {
-    try {
-      const response = await apiRequest("POST", "/api/auth/register", userData);
-      this.state.user = response.user;
-      this.state.isAuthenticated = true;
-      this.notify();
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiRequest("POST", "/api/auth/register", userData);
+
+    const data = await response.json();
+    this.state = {
+      user: data.user,
+      contractor: null,
+      isAuthenticated: true,
+    };
+    this.notify();
   }
 
   logout() {
     this.state = {
       user: null,
+      contractor: null,
       isAuthenticated: false,
     };
     this.notify();

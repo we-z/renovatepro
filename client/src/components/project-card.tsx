@@ -2,15 +2,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Clock, MessageCircle } from "lucide-react";
-import type { Property } from "@shared/schema";
+import type { Project } from "@shared/schema";
 
 interface ProjectCardProps {
-  project: Property & {
-    manager?: any;
-    tenantCount?: number;
+  project: Project & {
+    homeowner?: any;
+    bidCount?: number;
   };
-  onViewDetails?: (project: Property) => void;
-  onSendMessage?: (project: Property) => void;
+  onViewDetails?: (project: Project) => void;
+  onSendMessage?: (project: Project) => void;
   showActions?: boolean;
 }
 
