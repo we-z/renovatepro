@@ -15,40 +15,67 @@ import {
   Sparkles,
   Eye,
   Target,
-  Globe
+  Globe,
+  ChevronDown,
+  Play
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function Landing() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % features.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   const features = [
     {
       icon: Brain,
       title: "AI-Powered Insights",
-      description: "Predictive analytics for maintenance, tenant risk assessment, and market trends"
+      description: "Predictive analytics for maintenance, tenant risk assessment, and market trends",
+      color: "from-blue-500 to-cyan-500"
     },
     {
       icon: TrendingUp,
       title: "Predictive Maintenance",
-      description: "Prevent costly repairs with AI-driven maintenance forecasting and scheduling"
+      description: "Prevent costly repairs with AI-driven maintenance forecasting and scheduling",
+      color: "from-green-500 to-emerald-500"
     },
     {
       icon: Shield,
       title: "Intelligent Risk Analysis",
-      description: "Advanced tenant screening and property risk assessment using machine learning"
+      description: "Advanced tenant screening and property risk assessment using machine learning",
+      color: "from-purple-500 to-violet-500"
     },
     {
       icon: Zap,
       title: "Automated Operations",
-      description: "Streamline workflows with intelligent automation for routine tasks"
+      description: "Streamline workflows with intelligent automation for routine tasks",
+      color: "from-yellow-500 to-orange-500"
     },
     {
       icon: Users,
       title: "Tenant Intelligence",
-      description: "Deep insights into tenant behavior and satisfaction patterns"
+      description: "Deep insights into tenant behavior and satisfaction patterns",
+      color: "from-pink-500 to-rose-500"
     },
     {
       icon: BarChart3,
       title: "Performance Analytics",
-      description: "Real-time dashboards with actionable insights for portfolio optimization"
+      description: "Real-time dashboards with actionable insights for portfolio optimization",
+      color: "from-indigo-500 to-blue-500"
     }
   ];
 
@@ -108,33 +135,52 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="border-b border-neutral-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-white overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30"></div>
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-4000"></div>
+      </div>
+
+      {/* Sticky Navigation */}
+      <nav className={`border-b border-neutral-100 sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm' : 'bg-white/80 backdrop-blur-sm'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
+            <div className="flex items-center space-x-3 group">
+              <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
                 <Building className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-slate-900">Puul AI</span>
+              <span className="text-xl font-semibold text-slate-900 transition-colors duration-300 group-hover:text-blue-600">
+                Puul AI
+              </span>
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <Link href="#features" className="text-slate-600 hover:text-slate-900 transition-colors font-medium">Features</Link>
-              <Link href="#pricing" className="text-slate-600 hover:text-slate-900 transition-colors font-medium">Pricing</Link>
-              <Link href="#about" className="text-slate-600 hover:text-slate-900 transition-colors font-medium">About</Link>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Link href="/app">
-                <Button variant="ghost" className="text-slate-600 hover:text-slate-900">
+              <a href="#features" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group">
+                Features
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#pricing" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group">
+                Pricing
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#demo" className="text-slate-600 hover:text-slate-900 transition-all duration-300 font-medium relative group">
+                Demo
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <Link href="/login">
+                <Button variant="outline" className="hover:shadow-md transition-all duration-300 hover:scale-105">
                   Sign In
                 </Button>
               </Link>
-              <Link href="/subscribe">
-                <Button className="bg-slate-900 hover:bg-slate-800 text-white">
+              <Link href="/login">
+                <Button className="bg-slate-900 hover:bg-slate-800 text-white hover:shadow-lg transition-all duration-300 hover:scale-105 group">
                   Get Started
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </Link>
             </div>
@@ -143,50 +189,65 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-white"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <Badge className="mb-6 bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 px-4 py-2">
-              <Sparkles className="h-4 w-4 mr-2" />
-              The First AI-Native Property Management Platform
+      <section className="relative pt-20 pb-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="animate-fade-in-up">
+            <Badge className="mb-6 px-4 py-2 bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200 transition-all duration-300 hover:scale-105">
+              <Sparkles className="w-4 h-4 mr-2" />
+              AI-Native Property Management Platform
             </Badge>
-            
-            <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-8 tracking-tight">
-              Intelligence-First
-              <br />
-              <span className="text-slate-600">Property Management</span>
-            </h1>
-            
-            <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Transform your property portfolio with AI-powered insights, predictive maintenance, 
-              and automated operations designed for enterprise property managers.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/subscribe">
-                <Button size="lg" className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 text-lg">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/app">
-                <Button variant="outline" size="lg" className="border-slate-200 text-slate-700 hover:bg-slate-50 px-8 py-4 text-lg">
-                  View Demo
-                </Button>
-              </Link>
-            </div>
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-6 tracking-tight animate-fade-in-up animation-delay-200">
+            The Future of{" "}
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
+              Property Management
+            </span>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-400">
+            Revolutionize your property portfolio with AI-powered insights, predictive maintenance, 
+            and intelligent automation designed for enterprise property managers.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-600">
+            <Link href="/login">
+              <Button size="lg" className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 text-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+                Start Free Trial
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Button>
+            </Link>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="px-8 py-4 text-lg hover:shadow-lg transition-all duration-300 hover:scale-105 group"
+            >
+              <Play className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+              Watch Demo
+            </Button>
+          </div>
+
+          {/* Floating animation indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <ChevronDown className="h-6 w-6 text-slate-400" />
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Stats Section with Parallax */}
+      <section className="py-20 bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
+              <div 
+                key={stat.label} 
+                className="text-center group animate-fade-in-up"
+                style={{ animationDelay: `${index * 100 + 800}ms` }}
+              >
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2 transition-transform duration-300 group-hover:scale-110">
+                  {stat.value}
+                </div>
                 <div className="text-slate-300 font-medium">{stat.label}</div>
               </div>
             ))}
@@ -194,29 +255,34 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-32 bg-white">
+      {/* Features Section with Sticky Content */}
+      <section id="features" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              Built for the Future of Property Management
+              AI-Powered Features
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Every feature designed with AI at its core, delivering unprecedented 
-              insights and automation for modern property managers.
+              Transform your property management with cutting-edge artificial intelligence 
+              designed specifically for enterprise portfolios.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 group">
+                <Card 
+                  key={feature.title} 
+                  className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 border-0 shadow-lg hover:-translate-y-2 animate-fade-in-up"
+                  style={{ animationDelay: `${index * 100 + 1000}ms` }}
+                  onMouseEnter={() => setActiveFeature(index)}
+                >
                   <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-slate-900 transition-colors">
-                      <Icon className="h-6 w-6 text-slate-600 group-hover:text-white transition-colors" />
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12`}>
+                      <Icon className="h-8 w-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-slate-900 mb-3">
+                    <h3 className="text-xl font-semibold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors duration-300">
                       {feature.title}
                     </h3>
                     <p className="text-slate-600 leading-relaxed">
@@ -230,104 +296,67 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-32 bg-slate-50">
+      {/* Pricing Section with Interactive Cards */}
+      <section id="pricing" className="py-24 bg-gradient-to-br from-slate-50 to-blue-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              AI That Actually Works
+              Simple, Transparent Pricing
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Our AI doesn't just analyze data—it predicts problems, suggests solutions, 
-              and automates actions to keep your properties running smoothly.
+              Choose the perfect plan for your property portfolio. All plans include 
+              a 30-day free trial with full access to AI features.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Eye className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-4">Observe</h3>
-              <p className="text-slate-600">
-                Our AI continuously monitors your properties, analyzing patterns 
-                in maintenance, tenant behavior, and operational efficiency.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Target className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-4">Predict</h3>
-              <p className="text-slate-600">
-                Advanced algorithms predict maintenance needs, tenant risks, 
-                and market opportunities before they become problems.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Zap className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-4">Act</h3>
-              <p className="text-slate-600">
-                Automated workflows execute preventive actions, schedule maintenance, 
-                and optimize operations without manual intervention.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-              Scale with Confidence
-            </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Transparent pricing that grows with your portfolio. 
-              Start with a free trial and upgrade as you expand.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {pricing.map((plan, index) => (
-              <Card key={index} className={`relative ${
-                plan.popular 
-                  ? 'border-slate-900 shadow-lg scale-105' 
-                  : 'border-slate-200 hover:border-slate-300'
-              } transition-all duration-300`}>
+              <Card 
+                key={plan.name} 
+                className={`relative group transition-all duration-500 hover:scale-105 border-0 shadow-lg hover:shadow-2xl animate-fade-in-up ${
+                  plan.popular 
+                    ? 'ring-2 ring-blue-500 shadow-blue-100 hover:shadow-blue-200' 
+                    : 'hover:shadow-slate-200'
+                }`}
+                style={{ animationDelay: `${index * 200 + 1200}ms` }}
+              >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-slate-900 text-white px-4 py-1">Most Popular</Badge>
+                    <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 shadow-lg">
+                      Most Popular
+                    </Badge>
                   </div>
                 )}
+                
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-semibold text-slate-900 mb-2">{plan.name}</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{plan.name}</h3>
                   <p className="text-slate-600 mb-6">{plan.description}</p>
+                  
                   <div className="mb-6">
                     <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
-                    <span className="text-slate-600 ml-2">{plan.period}</span>
+                    {plan.price !== "Custom" && (
+                      <span className="text-slate-500 ml-2">/{plan.period}</span>
+                    )}
                   </div>
-                  <ul className="space-y-4 mb-8">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center">
+                  
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-center">
                         <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
                         <span className="text-slate-600">{feature}</span>
                       </li>
                     ))}
                   </ul>
+                  
                   <Button 
-                    className={`w-full ${
+                    className={`w-full py-3 transition-all duration-300 hover:scale-105 group ${
                       plan.popular 
-                        ? 'bg-slate-900 hover:bg-slate-800 text-white' 
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg' 
+                        : 'bg-slate-900 hover:bg-slate-800 text-white'
                     }`}
                   >
                     {plan.cta}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Button>
                 </CardContent>
               </Card>
@@ -337,28 +366,27 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 bg-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your Properties?
+      <section className="py-24 bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/30 to-purple-900/30"></div>
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 animate-fade-in-up">
+            Ready to Transform Your Property Management?
           </h2>
-          <p className="text-xl text-slate-300 mb-12">
-            Join forward-thinking property managers who are already using AI 
-            to optimize their operations and maximize their returns.
+          <p className="text-xl text-slate-300 mb-8 animate-fade-in-up animation-delay-200">
+            Join thousands of property managers who have revolutionized their operations with Puul AI.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/subscribe">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-400">
+            <Link href="/login">
+              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
                 Start Your Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Button>
             </Link>
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-slate-600 text-white hover:bg-slate-800 px-8 py-4 text-lg"
+              className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg transition-all duration-300 hover:scale-105"
             >
-              <Globe className="mr-2 h-5 w-5" />
               Schedule Demo
             </Button>
           </div>
@@ -366,18 +394,23 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+      <footer className="bg-white border-t border-neutral-200 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-3 mb-4 md:mb-0">
               <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
                 <Building className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-semibold text-slate-900">Puul AI</span>
             </div>
-            <p className="text-slate-600">
-              © 2024 Puul AI. The future of property management.
-            </p>
+            <div className="flex space-x-8 text-slate-600">
+              <a href="#" className="hover:text-slate-900 transition-colors duration-300">Privacy</a>
+              <a href="#" className="hover:text-slate-900 transition-colors duration-300">Terms</a>
+              <a href="#" className="hover:text-slate-900 transition-colors duration-300">Support</a>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-neutral-200 text-center text-slate-500">
+            <p>&copy; 2025 Puul AI. All rights reserved.</p>
           </div>
         </div>
       </footer>
