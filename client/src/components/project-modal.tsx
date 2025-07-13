@@ -7,18 +7,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProjectSchema } from "@shared/schema";
+import { insertPropertySchema } from "@shared/schema";
 import { z } from "zod";
 import { authService } from "@/lib/auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 
-const projectFormSchema = insertProjectSchema.extend({
-  budgetRange: z.string(),
+const propertyFormSchema = insertPropertySchema.extend({
+  yearBuilt: z.number().min(1800).max(new Date().getFullYear()),
+  units: z.number().min(1).max(1000),
+  squareFootage: z.number().min(100).max(100000),
 });
 
-type ProjectFormData = z.infer<typeof projectFormSchema>;
+type PropertyFormData = z.infer<typeof propertyFormSchema>;
 
 interface ProjectModalProps {
   open: boolean;
@@ -36,42 +38,35 @@ export function ProjectModal({ open, onOpenChange }: ProjectModalProps) {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<ProjectFormData>({
-    resolver: zodResolver(projectFormSchema),
+  } = useForm<PropertyFormData>({
+    resolver: zodResolver(propertyFormSchema),
     defaultValues: {
-      homeownerId: authState.user?.id || 0,
-      status: "posted",
+      managerId: authState.user?.id || 0,
+      status: "active",
       images: [],
+      amenities: [],
     },
   });
 
-  const budgetRanges = [
-    { value: "0-5000", label: "Under $5,000", min: 0, max: 5000 },
-    { value: "5000-10000", label: "$5,000 - $10,000", min: 5000, max: 10000 },
-    { value: "10000-25000", label: "$10,000 - $25,000", min: 10000, max: 25000 },
-    { value: "25000-50000", label: "$25,000 - $50,000", min: 25000, max: 50000 },
-    { value: "50000+", label: "$50,000+", min: 50000, max: 100000 },
+  const propertyTypes = [
+    "apartment",
+    "house", 
+    "commercial",
+    "mixed_use"
   ];
 
-  const categories = [
-    "Kitchen Renovation",
-    "Bathroom Remodel",
-    "Roofing",
-    "Flooring",
-    "Deck/Patio",
-    "Painting",
-    "General Construction",
+  const amenityOptions = [
+    "Pool",
+    "Gym", 
+    "Parking",
+    "Laundry",
+    "Balcony",
+    "Storage",
+    "Garden",
+    "Security"
   ];
 
-  const timelines = [
-    "ASAP",
-    "Within 1 month",
-    "1-3 months",
-    "3-6 months",
-    "Flexible",
-  ];
-
-  const onSubmit = async (data: ProjectFormData) => {
+  const onSubmit = async (data: PropertyFormData) => {
     if (!authState.user) return;
 
     setIsSubmitting(true);

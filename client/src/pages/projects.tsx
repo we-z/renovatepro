@@ -4,7 +4,7 @@ import { Navigation } from "@/components/navigation";
 import { SubscriptionGuard } from "@/components/subscription-guard";
 import { ProjectCard } from "@/components/project-card";
 import { BidTable } from "@/components/bid-table";
-import { ProjectModal } from "@/components/project-modal";
+import { PropertyModal } from "@/components/property-modal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,16 +20,16 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertBidSchema } from "@shared/schema";
+import { insertMaintenanceRequestSchema } from "@shared/schema";
 import { z } from "zod";
 
-const bidFormSchema = insertBidSchema.omit({ projectId: true, contractorId: true });
-type BidFormData = z.infer<typeof bidFormSchema>;
+const maintenanceFormSchema = insertMaintenanceRequestSchema.omit({ propertyId: true });
+type MaintenanceFormData = z.infer<typeof maintenanceFormSchema>;
 
 export default function Projects() {
   const [authState, setAuthState] = useState(authService.getState());
-  const [showProjectModal, setShowProjectModal] = useState(false);
-  const [showBidModal, setShowBidModal] = useState(false);
+  const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -42,9 +42,9 @@ export default function Projects() {
 
   // Fetch data based on user type
   const { data: projects = [], isLoading } = useQuery({
-    queryKey: authState.user?.userType === "homeowner" 
-      ? ["/api/users", authState.user?.id, "projects"]
-      : ["/api/projects"],
+    queryKey: authState.user?.userType === "property_manager" 
+      ? ["/api/users", authState.user?.id, "properties"]
+      : ["/api/properties"],
   });
 
   const { data: projectBids = [] } = useQuery({
@@ -72,8 +72,8 @@ export default function Projects() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<BidFormData>({
-    resolver: zodResolver(bidFormSchema),
+  } = useForm<MaintenanceFormData>({
+    resolver: zodResolver(maintenanceFormSchema),
   });
 
   const categories = [

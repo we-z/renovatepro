@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { insertUserSchema, insertContractorSchema, insertProjectSchema, insertBidSchema, insertMessageSchema } from "@shared/schema";
+import { insertUserSchema, insertPropertySchema, insertTenantSchema, insertMaintenanceRequestSchema, insertMessageSchema, insertAiInsightSchema } from "@shared/schema";
 import { z } from "zod";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -23,13 +23,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      // Get contractor profile if user is a contractor
-      let contractor = null;
-      if (user.userType === "contractor") {
-        contractor = await storage.getContractorByUserId(user.id);
-      }
-      
-      res.json({ user: { ...user, password: undefined }, contractor });
+      res.json({ user: { ...user, password: undefined } });
     } catch (error) {
       res.status(500).json({ message: "Login failed" });
     }
@@ -71,205 +65,261 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Contractors
-  app.get("/api/contractors", async (req, res) => {
+  // Properties
+  app.get("/api/properties", async (req, res) => {
     try {
-      const contractors = await storage.getContractors();
-      const contractorsWithUsers = await Promise.all(
-        contractors.map(async (contractor) => {
-          const user = await storage.getUser(contractor.userId);
-          return { ...contractor, user };
+      const properties = await storage.getProperties();
+      const propertiesWithDetails = await Promise.all(
+        properties.map(async (property) => {
+          const manager = await storage.getUser(property.managerId);
+          const tenants = await storage.getTenantsByProperty(property.id);
+          const maintenanceRequests = await storage.getMaintenanceRequestsByProperty(property.id);
+          return { 
+            ...property, 
+            manager, 
+            tenantCount: tenants.length,
+            maintenanceCount: maintenanceRequests.filter(r => r.status === 'pending').length
+          };
         })
       );
-      res.json(contractorsWithUsers);
+      res.json(propertiesWithDetails);
     } catch (error) {
-      res.status(500).json({ message: "Failed to get contractors" });
+      res.status(500).json({ message: "Failed to get properties" });
     }
   });
 
-  app.get("/api/contractors/:id", async (req, res) => {
+  app.get("/api/properties/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const contractor = await storage.getContractor(id);
-      if (!contractor) {
-        return res.status(404).json({ message: "Contractor not found" });
+      const property = await storage.getProperty(id);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
       }
-      const user = await storage.getUser(contractor.userId);
-      res.json({ ...contractor, user });
+      const manager = await storage.getUser(property.managerId);
+      const tenants = await storage.getTenantsByProperty(property.id);
+      const maintenanceRequests = await storage.getMaintenanceRequestsByProperty(property.id);
+      res.json({ ...property, manager, tenants, maintenanceRequests });
     } catch (error) {
-      res.status(500).json({ message: "Failed to get contractor" });
+      res.status(500).json({ message: "Failed to get property" });
     }
   });
 
-  app.post("/api/contractors", async (req, res) => {
+  app.get("/api/users/:managerId/properties", async (req, res) => {
     try {
-      const contractorData = insertContractorSchema.parse(req.body);
-      const contractor = await storage.createContractor(contractorData);
-      res.json(contractor);
+      const managerId = parseInt(req.params.managerId);
+      const properties = await storage.getPropertiesByManager(managerId);
+      const propertiesWithDetails = await Promise.all(
+        properties.map(async (property) => {
+          const tenants = await storage.getTenantsByProperty(property.id);
+          const maintenanceRequests = await storage.getMaintenanceRequestsByProperty(property.id);
+          return { 
+            ...property, 
+            tenantCount: tenants.length,
+            maintenanceCount: maintenanceRequests.filter(r => r.status === 'pending').length
+          };
+        })
+      );
+      res.json(propertiesWithDetails);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create contractor" });
+      res.status(500).json({ message: "Failed to get user properties" });
     }
   });
 
-  app.put("/api/contractors/:id", async (req, res) => {
+  app.post("/api/properties", async (req, res) => {
+    try {
+      const propertyData = insertPropertySchema.parse(req.body);
+      const property = await storage.createProperty(propertyData);
+      res.json(property);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create property" });
+    }
+  });
+
+  app.put("/api/properties/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
-      const contractor = await storage.updateContractor(id, updates);
-      if (!contractor) {
-        return res.status(404).json({ message: "Contractor not found" });
+      const property = await storage.updateProperty(id, updates);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
       }
-      res.json(contractor);
+      res.json(property);
     } catch (error) {
-      res.status(400).json({ message: "Failed to update contractor" });
+      res.status(400).json({ message: "Failed to update property" });
     }
   });
 
-  // Projects
-  app.get("/api/projects", async (req, res) => {
+  // Tenants
+  app.get("/api/tenants", async (req, res) => {
     try {
-      const projects = await storage.getProjects();
-      const projectsWithDetails = await Promise.all(
-        projects.map(async (project) => {
-          const homeowner = await storage.getUser(project.homeownerId);
-          const bids = await storage.getBidsByProject(project.id);
-          return { ...project, homeowner, bidCount: bids.length };
+      const tenants = await storage.getTenants();
+      const tenantsWithDetails = await Promise.all(
+        tenants.map(async (tenant) => {
+          const property = await storage.getProperty(tenant.propertyId);
+          return { ...tenant, property };
         })
       );
-      res.json(projectsWithDetails);
+      res.json(tenantsWithDetails);
     } catch (error) {
-      res.status(500).json({ message: "Failed to get projects" });
+      res.status(500).json({ message: "Failed to get tenants" });
     }
   });
 
-  app.get("/api/projects/:id", async (req, res) => {
+  app.get("/api/properties/:propertyId/tenants", async (req, res) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      const tenants = await storage.getTenantsByProperty(propertyId);
+      res.json(tenants);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get property tenants" });
+    }
+  });
+
+  app.post("/api/tenants", async (req, res) => {
+    try {
+      const tenantData = insertTenantSchema.parse(req.body);
+      const tenant = await storage.createTenant(tenantData);
+      res.json(tenant);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create tenant" });
+    }
+  });
+
+  app.put("/api/tenants/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const project = await storage.getProject(id);
-      if (!project) {
-        return res.status(404).json({ message: "Project not found" });
+      const updates = req.body;
+      const tenant = await storage.updateTenant(id, updates);
+      if (!tenant) {
+        return res.status(404).json({ message: "Tenant not found" });
       }
-      const homeowner = await storage.getUser(project.homeownerId);
-      const bids = await storage.getBidsByProject(project.id);
-      res.json({ ...project, homeowner, bids });
+      res.json(tenant);
     } catch (error) {
-      res.status(500).json({ message: "Failed to get project" });
+      res.status(400).json({ message: "Failed to update tenant" });
     }
   });
 
-  app.get("/api/users/:userId/projects", async (req, res) => {
+  // Maintenance Requests
+  app.get("/api/maintenance-requests", async (req, res) => {
+    try {
+      const requests = await storage.getMaintenanceRequests();
+      const requestsWithDetails = await Promise.all(
+        requests.map(async (request) => {
+          const property = await storage.getProperty(request.propertyId);
+          const tenant = request.tenantId ? await storage.getTenant(request.tenantId) : null;
+          const assignedTo = request.assignedTo ? await storage.getUser(request.assignedTo) : null;
+          return { ...request, property, tenant, assignedTo };
+        })
+      );
+      res.json(requestsWithDetails);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get maintenance requests" });
+    }
+  });
+
+  app.get("/api/properties/:propertyId/maintenance-requests", async (req, res) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      const requests = await storage.getMaintenanceRequestsByProperty(propertyId);
+      const requestsWithDetails = await Promise.all(
+        requests.map(async (request) => {
+          const tenant = request.tenantId ? await storage.getTenant(request.tenantId) : null;
+          const assignedTo = request.assignedTo ? await storage.getUser(request.assignedTo) : null;
+          return { ...request, tenant, assignedTo };
+        })
+      );
+      res.json(requestsWithDetails);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get property maintenance requests" });
+    }
+  });
+
+  app.post("/api/maintenance-requests", async (req, res) => {
+    try {
+      const requestData = insertMaintenanceRequestSchema.parse(req.body);
+      const request = await storage.createMaintenanceRequest(requestData);
+      res.json(request);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create maintenance request" });
+    }
+  });
+
+  app.put("/api/maintenance-requests/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      const request = await storage.updateMaintenanceRequest(id, updates);
+      if (!request) {
+        return res.status(404).json({ message: "Maintenance request not found" });
+      }
+      res.json(request);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update maintenance request" });
+    }
+  });
+
+  // AI Insights
+  app.get("/api/ai-insights", async (req, res) => {
+    try {
+      const insights = await storage.getAiInsights();
+      const insightsWithDetails = await Promise.all(
+        insights.map(async (insight) => {
+          const user = await storage.getUser(insight.userId);
+          const property = insight.propertyId ? await storage.getProperty(insight.propertyId) : null;
+          return { ...insight, user, property };
+        })
+      );
+      res.json(insightsWithDetails);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get AI insights" });
+    }
+  });
+
+  app.get("/api/users/:userId/ai-insights", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const projects = await storage.getProjectsByHomeowner(userId);
-      const projectsWithDetails = await Promise.all(
-        projects.map(async (project) => {
-          const bids = await storage.getBidsByProject(project.id);
-          return { ...project, bidCount: bids.length };
+      const insights = await storage.getAiInsightsByUser(userId);
+      const insightsWithDetails = await Promise.all(
+        insights.map(async (insight) => {
+          const property = insight.propertyId ? await storage.getProperty(insight.propertyId) : null;
+          return { ...insight, property };
         })
       );
-      res.json(projectsWithDetails);
+      res.json(insightsWithDetails);
     } catch (error) {
-      res.status(500).json({ message: "Failed to get user projects" });
+      res.status(500).json({ message: "Failed to get user AI insights" });
     }
   });
 
-  app.post("/api/projects", async (req, res) => {
+  app.post("/api/ai-insights", async (req, res) => {
     try {
-      const projectData = insertProjectSchema.parse(req.body);
-      const project = await storage.createProject(projectData);
-      res.json(project);
+      const insightData = insertAiInsightSchema.parse(req.body);
+      const insight = await storage.createAiInsight(insightData);
+      res.json(insight);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create project" });
+      res.status(400).json({ message: "Failed to create AI insight" });
     }
   });
 
-  app.put("/api/projects/:id", async (req, res) => {
+  app.put("/api/ai-insights/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
-      const project = await storage.updateProject(id, updates);
-      if (!project) {
-        return res.status(404).json({ message: "Project not found" });
+      const insight = await storage.updateAiInsight(id, updates);
+      if (!insight) {
+        return res.status(404).json({ message: "AI insight not found" });
       }
-      res.json(project);
+      res.json(insight);
     } catch (error) {
-      res.status(400).json({ message: "Failed to update project" });
-    }
-  });
-
-  // Bids
-  app.get("/api/projects/:projectId/bids", async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const bids = await storage.getBidsByProject(projectId);
-      const bidsWithContractors = await Promise.all(
-        bids.map(async (bid) => {
-          const contractor = await storage.getContractor(bid.contractorId);
-          const user = contractor ? await storage.getUser(contractor.userId) : null;
-          return { ...bid, contractor: contractor ? { ...contractor, user } : null };
-        })
-      );
-      res.json(bidsWithContractors);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to get bids" });
-    }
-  });
-
-  app.get("/api/contractors/:contractorId/bids", async (req, res) => {
-    try {
-      const contractorId = parseInt(req.params.contractorId);
-      const bids = await storage.getBidsByContractor(contractorId);
-      const bidsWithProjects = await Promise.all(
-        bids.map(async (bid) => {
-          const project = await storage.getProject(bid.projectId);
-          const homeowner = project ? await storage.getUser(project.homeownerId) : null;
-          return { ...bid, project: project ? { ...project, homeowner } : null };
-        })
-      );
-      res.json(bidsWithProjects);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to get contractor bids" });
-    }
-  });
-
-  app.post("/api/bids", async (req, res) => {
-    try {
-      const bidData = insertBidSchema.parse(req.body);
-      const bid = await storage.createBid(bidData);
-      res.json(bid);
-    } catch (error) {
-      res.status(400).json({ message: "Failed to create bid" });
-    }
-  });
-
-  app.put("/api/bids/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const updates = req.body;
-      const bid = await storage.updateBid(id, updates);
-      if (!bid) {
-        return res.status(404).json({ message: "Bid not found" });
-      }
-      
-      // If bid was accepted, update project status
-      if (updates.status === "accepted") {
-        const project = await storage.getProject(bid.projectId);
-        if (project) {
-          await storage.updateProject(project.id, { status: "awarded" });
-        }
-      }
-      
-      res.json(bid);
-    } catch (error) {
-      res.status(400).json({ message: "Failed to update bid" });
+      res.status(400).json({ message: "Failed to update AI insight" });
     }
   });
 
   // Messages
-  app.get("/api/projects/:projectId/messages", async (req, res) => {
+  app.get("/api/properties/:propertyId/messages", async (req, res) => {
     try {
-      const projectId = parseInt(req.params.projectId);
-      const messages = await storage.getMessagesByProject(projectId);
+      const propertyId = parseInt(req.params.propertyId);
+      const messages = await storage.getMessagesByProperty(propertyId);
       const messagesWithUsers = await Promise.all(
         messages.map(async (message) => {
           const sender = await storage.getUser(message.senderId);
@@ -283,7 +333,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:user1Id/messages/:user2Id", async (req, res) => {
+  app.get("/api/messages/between/:user1Id/:user2Id", async (req, res) => {
     try {
       const user1Id = parseInt(req.params.user1Id);
       const user2Id = parseInt(req.params.user2Id);
@@ -324,60 +374,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe subscription route
-  app.post('/api/create-subscription', async (req, res) => {
+  // Stripe payment routes
+  app.post("/api/create-payment-intent", async (req, res) => {
     try {
-      const { planId, planName, amount } = req.body;
-      
-      // For demo purposes, we'll create a payment intent instead of a subscription
-      // In production, you'd create actual subscription products in Stripe
+      const { amount } = req.body;
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "usd",
-        automatic_payment_methods: {
-          enabled: true,
-        },
-        metadata: {
-          planId,
-          planName,
-        },
       });
-
-      res.json({ 
-        clientSecret: paymentIntent.client_secret,
-        subscriptionId: paymentIntent.id
-      });
+      res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
-      console.error('Stripe error:', error);
       res
         .status(500)
-        .json({ message: "Error creating subscription: " + error.message });
+        .json({ message: "Error creating payment intent: " + error.message });
     }
   });
 
-  // Webhook to handle successful payments
-  app.post('/api/stripe-webhook', async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
-
+  app.post('/api/get-or-create-subscription', async (req, res) => {
     try {
-      // In production, you'd verify the webhook signature
-      event = req.body;
-    } catch (err) {
-      console.log('Webhook signature verification failed.');
-      return res.status(400).send('Webhook signature verification failed.');
+      // For demo purposes, return a mock subscription
+      const mockSubscription = {
+        subscriptionId: "sub_mock123",
+        clientSecret: "pi_mock123_secret_mock456"
+      };
+      res.json(mockSubscription);
+    } catch (error: any) {
+      return res.status(400).send({ error: { message: error.message } });
     }
-
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object;
-      const { planId, planName } = paymentIntent.metadata;
-      
-      // Update user subscription status
-      // Note: In a real app, you'd need to track which user this payment belongs to
-      console.log('Payment succeeded for plan:', planName);
-    }
-
-    res.json({ received: true });
   });
 
   const httpServer = createServer(app);

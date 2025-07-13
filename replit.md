@@ -1,25 +1,22 @@
-# RenovatePro - Home Improvement Platform
+# Puul AI - AI-Native Property Management Platform
 
 ## Overview
 
-RenovatePro is a comprehensive SaaS platform that connects homeowners and property managers with trusted contractors for renovation projects. The platform features a professional landing page, subscription-based pricing tiers, and Stripe payment integration for secure transactions.
+Puul AI is the first truly AI-native property management platform designed for enterprise property managers. The platform leverages artificial intelligence for predictive maintenance, tenant risk analysis, automated operations, and intelligent insights to transform property portfolio management. Built with elegant, minimal design inspired by Attio CRM, Notion, and Apple software.
 
-## Recent Changes (2025-01-12)
+## Recent Changes (2025-01-13)
 
-- ✓ Enhanced landing page with comprehensive hover animations and visual effects
-- ✓ Added smooth transitions, scale effects, and gradient animations throughout all sections
-- ✓ Implemented advanced CSS animations: fadeInUp, fadeInRight, bounceSubtle, and shimmer effects
-- ✓ Enhanced navigation with backdrop blur, rotating logos, and animated underlines
-- ✓ Upgraded hero section with floating background elements and interactive text effects
-- ✓ Improved features section with 3D hover transforms and gradient overlays
-- ✓ Enhanced pricing cards with dynamic scaling, shadow effects, and animated features
-- ✓ Added beautiful CTA section with gradient backgrounds and pulsing elements
-- ✓ Upgraded footer with interactive hover states and smooth transitions
-- ✓ Added glass morphism effects and pulse animations for premium visual appeal
-- ✓ Added comprehensive Open Graph and Twitter Card meta tags for beautiful link previews
-- ✓ Created professional OG preview image (1200x630) with brand elements and key features
-- ✓ Added SEO-optimized meta tags including title, description, and keywords
-- ✓ Created custom favicon and branding elements for better recognition
+- ✓ Complete platform transformation from RenovatePro to Puul AI
+- ✓ Rebuilt as AI-native property management platform for enterprise users
+- ✓ Redesigned with minimal, elegant aesthetic inspired by Attio CRM, Notion, and Apple
+- ✓ Updated schema for property management: properties, tenants, maintenance requests, AI insights
+- ✓ New user types: property_manager, tenant, owner, maintenance staff
+- ✓ Added AI features: predictive maintenance, tenant risk scoring, automated insights
+- ✓ Updated navigation to focus on properties, tenants, maintenance, and AI insights
+- ✓ Completely redesigned landing page with modern B2B SaaS design
+- ✓ Updated branding to "Puul AI" with new logo, colors, and messaging
+- ✓ Enterprise-focused pricing tiers and features
+- ✓ Mobile-optimized responsive design with clean typography
 
 ## User Preferences
 
@@ -49,37 +46,46 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Authentication System
-- Custom authentication service without JWT/sessions for simplicity
+- Custom authentication service optimized for property management workflows
 - User registration and login endpoints
-- Support for two user types: homeowners and contractors
-- Password stored in plain text (suitable for development/demo purposes)
+- Support for multiple user types: property_manager, tenant, owner, maintenance
+- Role-based access control with company-level permissions
 - Subscription-based access control with Stripe integration
 
 ### Subscription System
-- **Stripe Integration**: Secure payment processing for subscription plans
-- **Three Pricing Tiers**: Basic ($29/month), Pro ($79/month), Enterprise ($199/month)
-- **Plan Features**: Tiered access to project posting limits, contractor matching, and premium features
-- **Subscription Management**: Track subscription status, plan type, and Stripe customer/subscription IDs
+- **Stripe Integration**: Secure payment processing for enterprise subscription plans
+- **Three Pricing Tiers**: Starter ($99/property/month), Professional ($249/property/month), Enterprise (Custom)
+- **Plan Features**: Tiered access to AI features, unit limits, and premium support
+- **AI Credits**: Usage-based system for AI-powered features and insights
 
 ### User Management
-- **Users Table**: Core user information (username, email, contact details)
-- **Contractors Table**: Extended profile for contractors with company info, specialties, ratings
-- Role-based access control based on `userType` field
+- **Users Table**: Core user information with company association and roles
+- **Property Managers**: Admin, manager, agent, coordinator roles
+- **Multi-tenancy**: Company-level data isolation and permissions
 
-### Project Management
-- **Projects Table**: Homeowner project postings with budgets, timelines, and requirements
-- **Project Lifecycle**: posted → bidding → awarded → in_progress → completed
-- **Categories**: Kitchen, bathroom, roofing, flooring, deck/patio, painting, general construction
+### Property Management
+- **Properties Table**: Comprehensive property information with AI insights
+- **Property Types**: Apartment, house, commercial, mixed-use properties
+- **Status Tracking**: Active, maintenance, vacant property states
+- **AI Integration**: Automated insights and performance scoring
 
-### Bidding System
-- **Bids Table**: Contractor bids on projects with pricing and proposals
-- **Bid Status**: pending → accepted/rejected
-- Real-time bid management and acceptance workflow
+### Tenant Management
+- **Tenants Table**: Complete tenant profiles with lease information
+- **AI Risk Scoring**: Machine learning-based tenant risk assessment
+- **Lease Tracking**: Start/end dates, rent amounts, security deposits
+- **Communication**: Emergency contacts and pet policies
 
-### Messaging System
-- **Messages Table**: Direct communication between homeowners and contractors
-- **Thread-based**: Messages organized by project and participants
-- **Read Status**: Message read/unread tracking
+### Maintenance System
+- **Maintenance Requests**: Categorized requests with AI diagnosis
+- **AI Recommendations**: Automated maintenance suggestions and priorities
+- **Cost Tracking**: Estimated vs actual costs with budget analysis
+- **Scheduling**: Automated scheduling and technician assignment
+
+### AI Insights System
+- **Predictive Analytics**: Maintenance predictions, tenant risk, market analysis
+- **Automated Insights**: Cost optimization, efficiency recommendations
+- **Confidence Scoring**: AI confidence levels for decision support
+- **Actionable Intelligence**: Clear next steps and recommended actions
 
 ### Storage Layer
 - **Interface-based Design**: `IStorage` interface for data operations
