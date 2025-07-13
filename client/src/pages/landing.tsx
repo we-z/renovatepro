@@ -371,7 +371,7 @@ export default function Landing() {
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl group"
+              className="border-white text-slate-900 bg-white hover:bg-slate-100 hover:text-slate-700 px-8 py-4 text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl group"
             >
               <span className="transition-transform duration-300 group-hover:scale-105">Schedule Demo</span>
             </Button>
