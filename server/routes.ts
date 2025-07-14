@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { insertUserSchema, insertContractorSchema, insertProjectSchema, insertBidSchema, insertMessageSchema } from "@shared/schema";
+import { insertUserSchema, insertContractorSchema, insertProjectSchema, insertBidSchema, insertMessageSchema, insertDepositSchema } from "@shared/schema";
 import { z } from "zod";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -378,6 +378,147 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     res.json({ received: true });
+  });
+
+  // Deposit payment routes
+  app.post("/api/deposits/create-payment-intent", async (req, res) => {
+    try {
+      const { bidId, projectId, contractorId, amount, description } = req.body;
+      
+      if (!bidId || !projectId || !contractorId || !amount) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const bid = await storage.getBid(bidId);
+      if (!bid) {
+        return res.status(404).json({ message: "Bid not found" });
+      }
+
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Calculate deposit amount (in cents)
+      const depositAmount = Math.round(amount * 100);
+
+      // Create payment intent with Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: depositAmount,
+        currency: "usd",
+        metadata: {
+          projectId: projectId.toString(),
+          bidId: bidId.toString(),
+          contractorId: contractorId.toString(),
+          type: "project_deposit"
+        },
+        description: description || `Deposit for project: ${project.title}`
+      });
+
+      // Create deposit record
+      const deposit = await storage.createDeposit({
+        projectId,
+        payerId: project.homeownerId,
+        contractorId,
+        bidId,
+        amount: depositAmount,
+        status: "pending",
+        stripePaymentIntentId: paymentIntent.id,
+        description: description || `Deposit for project: ${project.title}`,
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        depositId: deposit.id,
+        amount: depositAmount 
+      });
+    } catch (error: any) {
+      console.error("Error creating deposit payment intent:", error);
+      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  app.post("/api/deposits/confirm-payment", async (req, res) => {
+    try {
+      const { paymentIntentId, depositId } = req.body;
+
+      if (!paymentIntentId || !depositId) {
+        return res.status(400).json({ message: "Missing payment intent ID or deposit ID" });
+      }
+
+      // Retrieve payment intent from Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+      if (paymentIntent.status === "succeeded") {
+        // Update deposit status
+        const updatedDeposit = await storage.updateDeposit(depositId, {
+          status: "completed",
+          paidAt: new Date(),
+          stripeChargeId: paymentIntent.charges.data[0]?.id
+        });
+
+        if (updatedDeposit) {
+          // Update project status to awarded if not already
+          await storage.updateProject(updatedDeposit.projectId, {
+            status: "awarded"
+          });
+
+          // Update bid status to accepted
+          await storage.updateBid(updatedDeposit.bidId, {
+            status: "accepted"
+          });
+        }
+
+        res.json({ 
+          success: true, 
+          deposit: updatedDeposit 
+        });
+      } else {
+        // Update deposit status to failed
+        await storage.updateDeposit(depositId, {
+          status: "failed"
+        });
+
+        res.status(400).json({ 
+          success: false, 
+          message: "Payment not completed" 
+        });
+      }
+    } catch (error: any) {
+      console.error("Error confirming payment:", error);
+      res.status(500).json({ message: "Error confirming payment: " + error.message });
+    }
+  });
+
+  app.get("/api/deposits/project/:projectId", async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const deposits = await storage.getDepositsByProject(projectId);
+      res.json(deposits);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get deposits" });
+    }
+  });
+
+  app.get("/api/deposits/contractor/:contractorId", async (req, res) => {
+    try {
+      const contractorId = parseInt(req.params.contractorId);
+      const deposits = await storage.getDepositsByContractor(contractorId);
+      res.json(deposits);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get deposits" });
+    }
+  });
+
+  app.get("/api/deposits/payer/:payerId", async (req, res) => {
+    try {
+      const payerId = parseInt(req.params.payerId);
+      const deposits = await storage.getDepositsByPayer(payerId);
+      res.json(deposits);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get deposits" });
+    }
   });
 
   const httpServer = createServer(app);

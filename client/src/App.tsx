@@ -13,6 +13,7 @@ import Messages from "@/pages/messages";
 import Login from "@/pages/login";
 import Landing from "@/pages/landing";
 import Subscribe from "@/pages/subscribe";
+import DepositPayment from "@/pages/deposit-payment";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -41,6 +42,7 @@ function Router() {
       <Route path="/app/projects" component={Projects} />
       <Route path="/app/contractors" component={Contractors} />
       <Route path="/app/messages" component={Messages} />
+      <Route path="/app/deposit-payment" component={DepositPayment} />
       <Route component={NotFound} />
     </Switch>
   );

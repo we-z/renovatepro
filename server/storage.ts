@@ -1,10 +1,11 @@
 import { 
-  users, contractors, projects, bids, messages,
+  users, contractors, projects, bids, messages, deposits,
   type User, type InsertUser,
   type Contractor, type InsertContractor,
   type Project, type InsertProject,
   type Bid, type InsertBid,
-  type Message, type InsertMessage
+  type Message, type InsertMessage,
+  type Deposit, type InsertDeposit
 } from "@shared/schema";
 
 export interface IStorage {
@@ -43,6 +44,14 @@ export interface IStorage {
   getMessagesBetweenUsers(user1Id: number, user2Id: number): Promise<Message[]>;
   createMessage(message: InsertMessage): Promise<Message>;
   markMessageAsRead(id: number): Promise<Message | undefined>;
+  
+  // Deposits
+  getDeposit(id: number): Promise<Deposit | undefined>;
+  getDepositsByProject(projectId: number): Promise<Deposit[]>;
+  getDepositsByPayer(payerId: number): Promise<Deposit[]>;
+  getDepositsByContractor(contractorId: number): Promise<Deposit[]>;
+  createDeposit(deposit: InsertDeposit): Promise<Deposit>;
+  updateDeposit(id: number, updates: Partial<Deposit>): Promise<Deposit | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -51,11 +60,13 @@ export class MemStorage implements IStorage {
   private projects: Map<number, Project>;
   private bids: Map<number, Bid>;
   private messages: Map<number, Message>;
+  private deposits: Map<number, Deposit>;
   private currentUserId: number;
   private currentContractorId: number;
   private currentProjectId: number;
   private currentBidId: number;
   private currentMessageId: number;
+  private currentDepositId: number;
 
   constructor() {
     this.users = new Map();
@@ -63,11 +74,13 @@ export class MemStorage implements IStorage {
     this.projects = new Map();
     this.bids = new Map();
     this.messages = new Map();
+    this.deposits = new Map();
     this.currentUserId = 1;
     this.currentContractorId = 1;
     this.currentProjectId = 1;
     this.currentBidId = 1;
     this.currentMessageId = 1;
+    this.currentDepositId = 1;
     
     // Initialize with sample data
     this.initializeSampleData();
@@ -427,6 +440,49 @@ export class MemStorage implements IStorage {
     const updated = { ...message, isRead: true };
     this.messages.set(id, updated);
     return updated;
+  }
+
+  // Deposit methods
+  async getDeposit(id: number): Promise<Deposit | undefined> {
+    return this.deposits.get(id);
+  }
+
+  async getDepositsByProject(projectId: number): Promise<Deposit[]> {
+    return Array.from(this.deposits.values()).filter(deposit => deposit.projectId === projectId);
+  }
+
+  async getDepositsByPayer(payerId: number): Promise<Deposit[]> {
+    return Array.from(this.deposits.values()).filter(deposit => deposit.payerId === payerId);
+  }
+
+  async getDepositsByContractor(contractorId: number): Promise<Deposit[]> {
+    return Array.from(this.deposits.values()).filter(deposit => deposit.contractorId === contractorId);
+  }
+
+  async createDeposit(insertDeposit: InsertDeposit): Promise<Deposit> {
+    const id = this.currentDepositId++;
+    const deposit: Deposit = { 
+      ...insertDeposit, 
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.deposits.set(id, deposit);
+    return deposit;
+  }
+
+  async updateDeposit(id: number, updates: Partial<Deposit>): Promise<Deposit | undefined> {
+    const deposit = this.deposits.get(id);
+    if (deposit) {
+      const updatedDeposit = { 
+        ...deposit, 
+        ...updates, 
+        updatedAt: new Date() 
+      };
+      this.deposits.set(id, updatedDeposit);
+      return updatedDeposit;
+    }
+    return undefined;
   }
 }
 

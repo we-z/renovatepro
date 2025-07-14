@@ -8,7 +8,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Eye, Check, X } from "lucide-react";
+import { Star, Eye, Check, X, CreditCard } from "lucide-react";
+import { useLocation } from "wouter";
 import type { Bid } from "@shared/schema";
 
 interface BidTableProps {
@@ -19,6 +20,7 @@ interface BidTableProps {
   onViewBid?: (bid: Bid) => void;
   onAcceptBid?: (bid: Bid) => void;
   onRejectBid?: (bid: Bid) => void;
+  onPayDeposit?: (bid: Bid) => void;
   showProjectColumn?: boolean;
 }
 
@@ -26,9 +28,11 @@ export function BidTable({
   bids, 
   onViewBid, 
   onAcceptBid, 
-  onRejectBid, 
+  onRejectBid,
+  onPayDeposit,
   showProjectColumn = false 
 }: BidTableProps) {
+  const [, setLocation] = useLocation();
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -195,9 +199,20 @@ export function BidTable({
                   )}
                   
                   {bid.status === "accepted" && (
-                    <Button variant="ghost" size="sm">
-                      Message
-                    </Button>
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-600 hover:text-blue-700"
+                        onClick={() => setLocation(`/app/deposit-payment?bidId=${bid.id}&projectId=${bid.projectId}`)}
+                      >
+                        <CreditCard className="h-4 w-4 mr-1" />
+                        Pay Deposit
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        Message
+                      </Button>
+                    </>
                   )}
                 </div>
               </TableCell>

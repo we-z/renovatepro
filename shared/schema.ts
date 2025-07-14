@@ -46,6 +46,8 @@ export const projects = pgTable("projects", {
   location: text("location").notNull(),
   status: text("status").notNull().default("posted"), // 'posted', 'bidding', 'awarded', 'in_progress', 'completed'
   images: text("images").array(),
+  depositRequired: boolean("deposit_required").default(false),
+  depositPercentage: integer("deposit_percentage").default(25), // percentage of bid amount
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -69,6 +71,25 @@ export const messages = pgTable("messages", {
   content: text("content").notNull(),
   isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const deposits = pgTable("deposits", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id).notNull(),
+  payerId: integer("payer_id").references(() => users.id).notNull(), // homeowner paying the deposit
+  contractorId: integer("contractor_id").references(() => contractors.id).notNull(),
+  bidId: integer("bid_id").references(() => bids.id).notNull(),
+  amount: integer("amount").notNull(), // amount in cents
+  status: text("status").notNull().default("pending"), // 'pending', 'processing', 'completed', 'failed', 'refunded'
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripeChargeId: text("stripe_charge_id"),
+  description: text("description"),
+  dueDate: timestamp("due_date"),
+  paidAt: timestamp("paid_at"),
+  refundedAt: timestamp("refunded_at"),
+  refundAmount: integer("refund_amount"), // amount refunded in cents
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Insert schemas
@@ -97,6 +118,12 @@ export const insertMessageSchema = createInsertSchema(messages).omit({
   createdAt: true,
 });
 
+export const insertDepositSchema = createInsertSchema(deposits).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -108,3 +135,5 @@ export type Bid = typeof bids.$inferSelect;
 export type InsertBid = z.infer<typeof insertBidSchema>;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type Deposit = typeof deposits.$inferSelect;
+export type InsertDeposit = z.infer<typeof insertDepositSchema>;
