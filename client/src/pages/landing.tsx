@@ -341,72 +341,189 @@ export default function Landing() {
       </section>
 
       {/* How It Works Section */}
-      <section id="about" className="py-20 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
+      <section id="about" className="py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
+        {/* Enhanced background elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-blue-500/5 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-bl from-purple-500/10 to-primary/5 rounded-full blur-3xl animate-float-delayed"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-accent/5 to-transparent rounded-full blur-2xl"></div>
+        
+        {/* Decorative grid */}
+        <div className="absolute inset-0 opacity-[0.02]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgb(59 130 246) 1px, transparent 0)`,
+            backgroundSize: '60px 60px'
+          }}></div>
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-16 animate-fade-in-up">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-105">
-              ⚡ Simple Process
-            </Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">
-              <span className="bg-gradient-to-r from-neutral-900 to-primary bg-clip-text text-transparent">
+          {/* Enhanced header */}
+          <div className="text-center mb-20 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 mb-6">
+              <div className="w-12 h-[2px] bg-gradient-to-r from-transparent to-primary rounded-full"></div>
+              <Badge className="bg-gradient-to-r from-primary/10 to-blue-500/10 text-primary border-primary/30 hover:from-primary/20 hover:to-blue-500/20 transition-all duration-500 hover:scale-105 px-6 py-2 text-sm font-medium shadow-lg hover:shadow-xl">
+                ⚡ Simple 3-Step Process
+              </Badge>
+              <div className="w-12 h-[2px] bg-gradient-to-l from-transparent to-primary rounded-full"></div>
+            </div>
+            
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-slate-900 via-primary to-blue-600 bg-clip-text text-transparent hover:from-primary hover:via-blue-600 hover:to-purple-600 transition-all duration-700">
                 How RenovatePro Works
               </span>
             </h2>
-            <p className="text-xl text-neutral-600 max-w-3xl mx-auto opacity-90 hover:opacity-100 transition-opacity duration-300">
-              Get your renovation project started in just three simple steps
+            
+            <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light">
+              Transform your renovation dreams into reality with our streamlined, secure, and intelligent platform
             </p>
+            
+            {/* Visual connection line */}
+            <div className="hidden md:block absolute top-full left-1/2 transform -translate-x-1/2 mt-12">
+              <div className="w-[2px] h-12 bg-gradient-to-b from-primary/50 to-transparent"></div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center group hover:-translate-y-2 transition-all duration-500">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/25">
-                <span className="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">
-                  1
-                </span>
-              </div>
-              <h3 className="text-2xl font-semibold text-neutral-900 mb-4 group-hover:text-primary transition-colors duration-300">
-                Post Your Project
-              </h3>
-              <p className="text-neutral-600 leading-relaxed group-hover:text-neutral-700 transition-colors duration-300">
-                Describe your renovation project with details about scope,
-                budget, timeline, and preferences. Our smart matching system
-                will find the right contractors.
-              </p>
+
+          {/* Enhanced process steps */}
+          <div className="relative">
+            {/* Connection line for desktop */}
+            <div className="hidden md:block absolute top-16 left-0 right-0 h-[2px] bg-gradient-to-r from-primary/20 via-primary/50 to-primary/20 z-0">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50 animate-pulse"></div>
             </div>
-            <div
-              className="text-center group hover:-translate-y-2 transition-all duration-500"
-              style={{ animationDelay: "100ms" }}
-            >
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/25">
-                <span className="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">
-                  2
-                </span>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 relative z-10">
+              {/* Step 1 */}
+              <div 
+                className="group relative animate-fade-in-up"
+                style={{ animationDelay: "200ms" }}
+              >
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-10 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:bg-white/90 group-hover:border-primary/30">
+                  {/* Floating elements */}
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
+                  <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse delay-200"></div>
+                  
+                  {/* Step number with enhanced design */}
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 bg-gradient-to-br from-primary via-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/25 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent to-black/10"></div>
+                      <span className="text-3xl font-bold text-white relative z-10 group-hover:scale-110 transition-transform duration-300">
+                        1
+                      </span>
+                      {/* Sparkle effect */}
+                      <div className="absolute top-2 right-2 w-2 h-2 bg-white/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping"></div>
+                    </div>
+                  </div>
+
+                  <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 group-hover:text-primary transition-colors duration-500 text-center">
+                    Post Your Project
+                  </h3>
+                  
+                  <p className="text-slate-600 leading-relaxed text-center group-hover:text-slate-700 transition-colors duration-300 text-lg font-light">
+                    Share your vision with detailed project requirements, budget range, and timeline. Our intelligent matching system connects you with pre-vetted contractors in your area.
+                  </p>
+
+                  {/* Progress indicator */}
+                  <div className="mt-8 flex justify-center">
+                    <div className="flex space-x-2">
+                      <div className="w-3 h-3 bg-primary rounded-full"></div>
+                      <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
+                      <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-semibold text-neutral-900 mb-4 group-hover:text-primary transition-colors duration-300">
-                Compare Proposals
-              </h3>
-              <p className="text-neutral-600 leading-relaxed group-hover:text-neutral-700 transition-colors duration-300">
-                Receive competitive bids from verified contractors. Review their
-                profiles, past work, and ratings to make an informed decision.
-              </p>
+
+              {/* Step 2 */}
+              <div 
+                className="group relative animate-fade-in-up"
+                style={{ animationDelay: "400ms" }}
+              >
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-10 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:bg-white/90 group-hover:border-primary/30">
+                  {/* Floating elements */}
+                  <div className="absolute -top-1 -left-2 w-5 h-5 bg-blue-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse delay-100"></div>
+                  <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse delay-300"></div>
+                  
+                  {/* Step number with enhanced design */}
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 via-primary to-purple-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-2xl group-hover:shadow-blue-500/25 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent to-black/10"></div>
+                      <span className="text-3xl font-bold text-white relative z-10 group-hover:scale-110 transition-transform duration-300">
+                        2
+                      </span>
+                      {/* Sparkle effect */}
+                      <div className="absolute top-2 right-2 w-2 h-2 bg-white/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping delay-100"></div>
+                    </div>
+                  </div>
+
+                  <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 group-hover:text-primary transition-colors duration-500 text-center">
+                    Review & Compare
+                  </h3>
+                  
+                  <p className="text-slate-600 leading-relaxed text-center group-hover:text-slate-700 transition-colors duration-300 text-lg font-light">
+                    Receive detailed proposals from qualified contractors. Compare portfolios, reviews, pricing, and timelines to find the perfect match for your project.
+                  </p>
+
+                  {/* Progress indicator */}
+                  <div className="mt-8 flex justify-center">
+                    <div className="flex space-x-2">
+                      <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
+                      <div className="w-3 h-3 bg-primary rounded-full"></div>
+                      <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div 
+                className="group relative animate-fade-in-up"
+                style={{ animationDelay: "600ms" }}
+              >
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-10 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:bg-white/90 group-hover:border-primary/30">
+                  {/* Floating elements */}
+                  <div className="absolute -top-2 -left-1 w-3 h-3 bg-purple-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse delay-200"></div>
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse delay-400"></div>
+                  
+                  {/* Step number with enhanced design */}
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 bg-gradient-to-br from-purple-600 via-primary to-green-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-2xl group-hover:shadow-purple-500/25 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent to-black/10"></div>
+                      <span className="text-3xl font-bold text-white relative z-10 group-hover:scale-110 transition-transform duration-300">
+                        3
+                      </span>
+                      {/* Sparkle effect */}
+                      <div className="absolute top-2 right-2 w-2 h-2 bg-white/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping delay-200"></div>
+                    </div>
+                  </div>
+
+                  <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 group-hover:text-primary transition-colors duration-500 text-center">
+                    Build & Track
+                  </h3>
+                  
+                  <p className="text-slate-600 leading-relaxed text-center group-hover:text-slate-700 transition-colors duration-300 text-lg font-light">
+                    Securely pay deposits, communicate directly with your contractor, and track project milestones through our comprehensive dashboard.
+                  </p>
+
+                  {/* Progress indicator */}
+                  <div className="mt-8 flex justify-center">
+                    <div className="flex space-x-2">
+                      <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
+                      <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
+                      <div className="w-3 h-3 bg-primary rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div
-              className="text-center group hover:-translate-y-2 transition-all duration-500"
-              style={{ animationDelay: "200ms" }}
-            >
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-2xl group-hover:shadow-primary/25">
-                <span className="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">
-                  3
-                </span>
+
+            {/* Bottom decorative element */}
+            <div className="text-center mt-16 animate-fade-in-up" style={{ animationDelay: "800ms" }}>
+              <div className="inline-flex items-center gap-4 bg-gradient-to-r from-primary/10 via-white/50 to-primary/10 backdrop-blur-sm border border-primary/20 rounded-full px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <span className="text-slate-600 font-medium">Trusted by 10,000+ homeowners</span>
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-500"></div>
               </div>
-              <h3 className="text-2xl font-semibold text-neutral-900 mb-4 group-hover:text-primary transition-colors duration-300">
-                Manage & Communicate
-              </h3>
-              <p className="text-neutral-600 leading-relaxed group-hover:text-neutral-700 transition-colors duration-300">
-                Award the project to your chosen contractor and use our built-in
-                tools to track progress, communicate, and ensure successful
-                completion.
-              </p>
             </div>
           </div>
         </div>
