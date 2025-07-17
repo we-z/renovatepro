@@ -1,6 +1,6 @@
 import { 
   users, contractors, projects, bids, messages, deposits,
-  type User, type InsertUser,
+  type User, type InsertUser, type UpsertUser,
   type Contractor, type InsertContractor,
   type Project, type InsertProject,
   type Bid, type InsertBid,
@@ -10,16 +10,17 @@ import {
 
 export interface IStorage {
   // Users
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUserStripeInfo(id: number, customerId: string, subscriptionId: string): Promise<User | undefined>;
-  updateUserSubscription(id: number, status: string, plan?: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  updateUserStripeInfo(id: string, customerId: string, subscriptionId: string): Promise<User | undefined>;
+  updateUserSubscription(id: string, status: string, plan?: string): Promise<User | undefined>;
+  updateUserType(id: string, userType: string): Promise<User | undefined>;
   
   // Contractors
   getContractor(id: number): Promise<Contractor | undefined>;
-  getContractorByUserId(userId: number): Promise<Contractor | undefined>;
+  getContractorByUserId(userId: string): Promise<Contractor | undefined>;
   createContractor(contractor: InsertContractor): Promise<Contractor>;
   getContractors(): Promise<Contractor[]>;
   updateContractor(id: number, updates: Partial<Contractor>): Promise<Contractor | undefined>;
@@ -27,7 +28,7 @@ export interface IStorage {
   // Projects
   getProject(id: number): Promise<Project | undefined>;
   getProjects(): Promise<Project[]>;
-  getProjectsByHomeowner(homeownerId: number): Promise<Project[]>;
+  getProjectsByHomeowner(homeownerId: string): Promise<Project[]>;
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: number, updates: Partial<Project>): Promise<Project | undefined>;
   
@@ -41,27 +42,26 @@ export interface IStorage {
   // Messages
   getMessage(id: number): Promise<Message | undefined>;
   getMessagesByProject(projectId: number): Promise<Message[]>;
-  getMessagesBetweenUsers(user1Id: number, user2Id: number): Promise<Message[]>;
+  getMessagesBetweenUsers(user1Id: string, user2Id: string): Promise<Message[]>;
   createMessage(message: InsertMessage): Promise<Message>;
   markMessageAsRead(id: number): Promise<Message | undefined>;
   
   // Deposits
   getDeposit(id: number): Promise<Deposit | undefined>;
   getDepositsByProject(projectId: number): Promise<Deposit[]>;
-  getDepositsByPayer(payerId: number): Promise<Deposit[]>;
+  getDepositsByPayer(payerId: string): Promise<Deposit[]>;
   getDepositsByContractor(contractorId: number): Promise<Deposit[]>;
   createDeposit(deposit: InsertDeposit): Promise<Deposit>;
   updateDeposit(id: number, updates: Partial<Deposit>): Promise<Deposit | undefined>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private users: Map<string, User>;
   private contractors: Map<number, Contractor>;
   private projects: Map<number, Project>;
   private bids: Map<number, Bid>;
   private messages: Map<number, Message>;
   private deposits: Map<number, Deposit>;
-  private currentUserId: number;
   private currentContractorId: number;
   private currentProjectId: number;
   private currentBidId: number;
@@ -75,7 +75,6 @@ export class MemStorage implements IStorage {
     this.bids = new Map();
     this.messages = new Map();
     this.deposits = new Map();
-    this.currentUserId = 1;
     this.currentContractorId = 1;
     this.currentProjectId = 1;
     this.currentBidId = 1;
@@ -87,10 +86,9 @@ export class MemStorage implements IStorage {
   }
 
   private async initializeSampleData() {
-    // Create sample homeowners
-    const homeowner1 = await this.createUser({
-      username: "sarah_johnson",
-      password: "password123",
+    // Create sample homeowners with Google-style IDs
+    const homeowner1 = await this.upsertUser({
+      id: "google_12345",
       email: "sarah@example.com",
       firstName: "Sarah",
       lastName: "Johnson",
@@ -101,9 +99,8 @@ export class MemStorage implements IStorage {
       subscriptionPlan: "pro"
     });
 
-    const homeowner2 = await this.createUser({
-      username: "mike_chen",
-      password: "password123",
+    const homeowner2 = await this.upsertUser({
+      id: "google_67890",
       email: "mike@example.com",
       firstName: "Mike",
       lastName: "Chen",
@@ -115,9 +112,8 @@ export class MemStorage implements IStorage {
     });
 
     // Create sample contractors
-    const contractorUser1 = await this.createUser({
-      username: "elite_construction",
-      password: "password123",
+    const contractorUser1 = await this.upsertUser({
+      id: "google_11111",
       email: "contact@eliteconstruction.com",
       firstName: "David",
       lastName: "Smith",
@@ -139,9 +135,8 @@ export class MemStorage implements IStorage {
       insurance: true
     });
 
-    const contractorUser2 = await this.createUser({
-      username: "modern_kitchens",
-      password: "password123",
+    const contractorUser2 = await this.upsertUser({
+      id: "google_22222",
       email: "info@modernkitchens.com",
       firstName: "Lisa",
       lastName: "Rodriguez",
@@ -163,9 +158,8 @@ export class MemStorage implements IStorage {
       insurance: true
     });
 
-    const contractorUser3 = await this.createUser({
-      username: "bay_roofing",
-      password: "password123",
+    const contractorUser3 = await this.upsertUser({
+      id: "google_33333",
       email: "service@bayroofing.com",
       firstName: "James",
       lastName: "Wilson",
@@ -261,12 +255,8 @@ export class MemStorage implements IStorage {
   }
 
   // Users
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
@@ -274,37 +264,63 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
     const user: User = { 
       ...insertUser, 
-      id,
-      createdAt: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
-    this.users.set(id, user);
+    this.users.set(insertUser.id!, user);
     return user;
   }
 
-  async updateUserStripeInfo(id: number, customerId: string, subscriptionId: string): Promise<User | undefined> {
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const existingUser = this.users.get(userData.id!);
+    const user: User = {
+      ...existingUser,
+      ...userData,
+      createdAt: existingUser?.createdAt || new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(userData.id!, user);
+    return user;
+  }
+
+  async updateUserStripeInfo(id: string, customerId: string, subscriptionId: string): Promise<User | undefined> {
     const user = this.users.get(id);
     if (!user) return undefined;
     
     const updated = { 
       ...user, 
       stripeCustomerId: customerId,
-      stripeSubscriptionId: subscriptionId
+      stripeSubscriptionId: subscriptionId,
+      updatedAt: new Date()
     };
     this.users.set(id, updated);
     return updated;
   }
 
-  async updateUserSubscription(id: number, status: string, plan?: string): Promise<User | undefined> {
+  async updateUserSubscription(id: string, status: string, plan?: string): Promise<User | undefined> {
     const user = this.users.get(id);
     if (!user) return undefined;
     
     const updated = { 
       ...user, 
       subscriptionStatus: status,
-      ...(plan && { subscriptionPlan: plan })
+      ...(plan && { subscriptionPlan: plan }),
+      updatedAt: new Date()
+    };
+    this.users.set(id, updated);
+    return updated;
+  }
+
+  async updateUserType(id: string, userType: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated = { 
+      ...user, 
+      userType,
+      updatedAt: new Date()
     };
     this.users.set(id, updated);
     return updated;
@@ -315,7 +331,7 @@ export class MemStorage implements IStorage {
     return this.contractors.get(id);
   }
 
-  async getContractorByUserId(userId: number): Promise<Contractor | undefined> {
+  async getContractorByUserId(userId: string): Promise<Contractor | undefined> {
     return Array.from(this.contractors.values()).find(contractor => contractor.userId === userId);
   }
 
@@ -348,7 +364,7 @@ export class MemStorage implements IStorage {
     return Array.from(this.projects.values());
   }
 
-  async getProjectsByHomeowner(homeownerId: number): Promise<Project[]> {
+  async getProjectsByHomeowner(homeownerId: string): Promise<Project[]> {
     return Array.from(this.projects.values()).filter(project => project.homeownerId === homeownerId);
   }
 
@@ -415,7 +431,7 @@ export class MemStorage implements IStorage {
     return Array.from(this.messages.values()).filter(message => message.projectId === projectId);
   }
 
-  async getMessagesBetweenUsers(user1Id: number, user2Id: number): Promise<Message[]> {
+  async getMessagesBetweenUsers(user1Id: string, user2Id: string): Promise<Message[]> {
     return Array.from(this.messages.values()).filter(message => 
       (message.senderId === user1Id && message.receiverId === user2Id) ||
       (message.senderId === user2Id && message.receiverId === user1Id)
@@ -451,7 +467,7 @@ export class MemStorage implements IStorage {
     return Array.from(this.deposits.values()).filter(deposit => deposit.projectId === projectId);
   }
 
-  async getDepositsByPayer(payerId: number): Promise<Deposit[]> {
+  async getDepositsByPayer(payerId: string): Promise<Deposit[]> {
     return Array.from(this.deposits.values()).filter(deposit => deposit.payerId === payerId);
   }
 
@@ -486,4 +502,9 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use database storage for production, memory storage for development
+import { DatabaseStorage } from "./databaseStorage";
+
+export const storage = process.env.NODE_ENV === "production" 
+  ? new DatabaseStorage() 
+  : new MemStorage();

@@ -2,8 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { insertUserSchema, insertContractorSchema, insertProjectSchema, insertBidSchema, insertMessageSchema, insertDepositSchema } from "@shared/schema";
+import { insertContractorSchema, insertProjectSchema, insertBidSchema, insertMessageSchema, insertDepositSchema } from "@shared/schema";
 import { z } from "zod";
+import { setupGoogleAuth, isAuthenticated, requireUserType } from "./googleAuth";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -13,66 +14,60 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Authentication
-  app.post("/api/auth/login", async (req, res) => {
+  // Setup Google OAuth authentication
+  await setupGoogleAuth(app);
+  
+  // Get current user route (this overrides the one in googleAuth.ts)
+  app.get("/api/auth/user", async (req, res) => {
     try {
-      const { username, password } = req.body;
-      const user = await storage.getUserByUsername(username);
-      
-      if (!user || user.password !== password) {
-        return res.status(401).json({ message: "Invalid credentials" });
+      if (req.isAuthenticated() && req.user) {
+        res.json(req.user);
+      } else {
+        res.status(401).json({ message: "Not authenticated" });
       }
-      
-      // Get contractor profile if user is a contractor
-      let contractor = null;
-      if (user.userType === "contractor") {
-        contractor = await storage.getContractorByUserId(user.id);
-      }
-      
-      res.json({ user: { ...user, password: undefined }, contractor });
     } catch (error) {
-      res.status(500).json({ message: "Login failed" });
+      console.error("Error getting user:", error);
+      res.status(500).json({ message: "Failed to get user" });
     }
   });
-
-  app.post("/api/auth/register", async (req, res) => {
+  
+  // Onboarding route to set user type
+  app.post("/api/auth/onboarding", isAuthenticated, async (req, res) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
+      const { userType } = req.body;
+      const user = req.user as any;
       
-      // Check if user already exists
-      const existingUser = await storage.getUserByUsername(userData.username);
-      if (existingUser) {
-        return res.status(400).json({ message: "Username already exists" });
+      if (!userType || !["homeowner", "contractor"].includes(userType)) {
+        return res.status(400).json({ message: "Invalid user type" });
       }
       
-      const existingEmail = await storage.getUserByEmail(userData.email);
-      if (existingEmail) {
-        return res.status(400).json({ message: "Email already exists" });
-      }
+      const updatedUser = await storage.updateUserType(user.id, userType);
       
-      const user = await storage.createUser(userData);
-      res.json({ user: { ...user, password: undefined } });
+      // Update the session user object
+      (req.user as any).userType = userType;
+      
+      res.json(updatedUser);
     } catch (error) {
-      res.status(400).json({ message: "Registration failed" });
+      res.status(500).json({ message: "Onboarding failed" });
     }
   });
 
   // Users
   app.get("/api/users/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const user = await storage.getUser(id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.json({ ...user, password: undefined });
+      res.json(user);
     } catch (error) {
       res.status(500).json({ message: "Failed to get user" });
     }
   });
 
   // Contractors
-  app.get("/api/contractors", async (req, res) => {
+  app.get("/api/contractors", requireUserType, async (req, res) => {
     try {
       const contractors = await storage.getContractors();
       const contractorsWithUsers = await Promise.all(
@@ -101,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/contractors", async (req, res) => {
+  app.post("/api/contractors", isAuthenticated, async (req, res) => {
     try {
       const contractorData = insertContractorSchema.parse(req.body);
       const contractor = await storage.createContractor(contractorData);
@@ -126,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Projects
-  app.get("/api/projects", async (req, res) => {
+  app.get("/api/projects", requireUserType, async (req, res) => {
     try {
       const projects = await storage.getProjects();
       const projectsWithDetails = await Promise.all(
@@ -157,9 +152,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:userId/projects", async (req, res) => {
+  app.get("/api/users/:userId/projects", requireUserType, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.params.userId;
       const projects = await storage.getProjectsByHomeowner(userId);
       const projectsWithDetails = await Promise.all(
         projects.map(async (project) => {
@@ -173,7 +168,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/projects", async (req, res) => {
+  app.post("/api/projects", requireUserType, async (req, res) => {
     try {
       const projectData = insertProjectSchema.parse(req.body);
       const project = await storage.createProject(projectData);

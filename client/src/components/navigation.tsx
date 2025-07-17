@@ -1,8 +1,8 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Hammer, Bell, Home, FolderOpen, Users, MessageCircle, Menu } from "lucide-react";
-import { authService } from "@/lib/auth";
-import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 import { ProjectModal } from "./project-modal";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -12,15 +12,11 @@ interface NavigationProps {
 
 export function Navigation({ onPostProject }: NavigationProps) {
   const [location] = useLocation();
-  const [authState, setAuthState] = useState(authService.getState());
+  const { user, isAuthenticated } = useAuth();
   const [showProjectModal, setShowProjectModal] = useState(false);
 
-  useEffect(() => {
-    return authService.subscribe(setAuthState);
-  }, []);
-
   const handleLogout = () => {
-    authService.logout();
+    window.location.href = "/api/auth/logout";
   };
 
   const handlePostProject = () => {
@@ -39,7 +35,9 @@ export function Navigation({ onPostProject }: NavigationProps) {
   ];
 
   const getInitials = (firstName?: string, lastName?: string) => {
-    if (!firstName || !lastName) return "U";
+    if (!firstName && !lastName) return "U";
+    if (!firstName) return lastName?.charAt(0).toUpperCase() || "U";
+    if (!lastName) return firstName?.charAt(0).toUpperCase() || "U";
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
@@ -77,7 +75,7 @@ export function Navigation({ onPostProject }: NavigationProps) {
             <div className="flex items-center space-x-4">
               {/* Desktop actions */}
               <div className="hidden md:flex items-center space-x-4">
-                {authState.user?.userType === "homeowner" && (
+                {user?.userType === "homeowner" && (
                   <Button onClick={handlePostProject} className="bg-accent hover:bg-accent/90">
                     Post Project
                   </Button>
@@ -91,7 +89,7 @@ export function Navigation({ onPostProject }: NavigationProps) {
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-medium">
-                      {getInitials(authState.user?.firstName, authState.user?.lastName)}
+                      {getInitials(user?.firstName, user?.lastName)}
                     </span>
                   </div>
                   <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -109,7 +107,7 @@ export function Navigation({ onPostProject }: NavigationProps) {
                 
                 <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-medium">
-                    {getInitials(authState.user?.firstName, authState.user?.lastName)}
+                    {getInitials(user?.firstName, user?.lastName)}
                   </span>
                 </div>
 
@@ -146,7 +144,7 @@ export function Navigation({ onPostProject }: NavigationProps) {
                       <hr className="my-4 border-neutral-200" />
                       
                       {/* Mobile actions at bottom of sidebar */}
-                      {authState.user?.userType === "homeowner" && (
+                      {user?.userType === "homeowner" && (
                         <Button 
                           onClick={handlePostProject} 
                           className="w-full bg-accent hover:bg-accent/90 justify-start"

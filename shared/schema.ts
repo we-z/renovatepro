@@ -1,28 +1,38 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, varchar, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for authentication
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-  email: text("email").notNull().unique(),
-  firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
-  userType: text("user_type").notNull(), // 'homeowner' or 'contractor'
+  id: varchar("id").primaryKey().notNull(), // Changed to varchar to support Google IDs
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  userType: text("user_type"), // 'homeowner' or 'contractor'
   phone: text("phone"),
   location: text("location"),
-  profileImage: text("profile_image"),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   subscriptionStatus: text("subscription_status").default("inactive"), // 'active', 'canceled', 'past_due', 'inactive'
   subscriptionPlan: text("subscription_plan"), // 'basic', 'pro', 'enterprise'
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const contractors = pgTable("contractors", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   companyName: text("company_name").notNull(),
   description: text("description"),
   specialties: text("specialties").array(),
@@ -36,7 +46,7 @@ export const contractors = pgTable("contractors", {
 
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
-  homeownerId: integer("homeowner_id").references(() => users.id).notNull(),
+  homeownerId: varchar("homeowner_id").references(() => users.id).notNull(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(),
@@ -66,8 +76,8 @@ export const bids = pgTable("bids", {
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id).notNull(),
-  senderId: integer("sender_id").references(() => users.id).notNull(),
-  receiverId: integer("receiver_id").references(() => users.id).notNull(),
+  senderId: varchar("sender_id").references(() => users.id).notNull(),
+  receiverId: varchar("receiver_id").references(() => users.id).notNull(),
   content: text("content").notNull(),
   isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
@@ -76,7 +86,7 @@ export const messages = pgTable("messages", {
 export const deposits = pgTable("deposits", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id).notNull(),
-  payerId: integer("payer_id").references(() => users.id).notNull(), // homeowner paying the deposit
+  payerId: varchar("payer_id").references(() => users.id).notNull(), // homeowner paying the deposit
   contractorId: integer("contractor_id").references(() => contractors.id).notNull(),
   bidId: integer("bid_id").references(() => bids.id).notNull(),
   amount: integer("amount").notNull(), // amount in cents
@@ -94,8 +104,13 @@ export const deposits = pgTable("deposits", {
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
   createdAt: true,
+  updatedAt: true,
+});
+
+export const upsertUserSchema = createInsertSchema(users).omit({
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const insertContractorSchema = createInsertSchema(contractors).omit({
@@ -127,6 +142,7 @@ export const insertDepositSchema = createInsertSchema(deposits).omit({
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type Contractor = typeof contractors.$inferSelect;
 export type InsertContractor = z.infer<typeof insertContractorSchema>;
 export type Project = typeof projects.$inferSelect;
